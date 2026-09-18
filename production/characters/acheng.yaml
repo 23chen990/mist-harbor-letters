@@ -1,0 +1,26 @@
+character_id: "acheng"
+name_cn: "阿成"
+age: "20岁（1937年）"
+role: "春和戏院前场跑腿伙计"
+master_reference: "art/角色设定/阿成_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "reference_five_paper_effigy_91_dec24_locked"
+body_proportion: "群像前五人视觉包络；窄肩、轻、重心轻微向前、一步未完；7.75头身仅作诊断"
+face_detail_level: "全身/转面L2、表情近景L3；年轻窄长脸、偏长中庭、细暗无高光眼、简化鼻嘴"
+default_costume: "近黑短外套、浅灰内襟/内衫、蓝炭灰直筒裤与窄薄黑鞋"
+signature_props: []
+visual_keywords:
+  - "前场跑腿"
+  - "移动准备"
+  - "轻"
+  - "克制阴森"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "好学生礼仪站姿"
+  - "少年偶像或时装模特姿态"
+  - "圆幼脸、蓬松头发或高光大眼"
+  - "蓬松裤腿与大鞋钉地"
+  - "用知情、爱意或嫌疑编码表情"
+standardization_required: false
+standardization_scope: []
+notes: "依据 DEC-20260830-24，以91分通过参考前五人完整纸偶硬门槛并锁定。二十岁前场跑腿、轻体态、一侧肩略前与一步未完不变；不得漂成健康学生、现代青年或小六，当前仍无确认的固定随身物。"

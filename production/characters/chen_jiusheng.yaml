@@ -1,0 +1,26 @@
+character_id: "chen_jiusheng"
+name_cn: "陈九生"
+age: "45岁（1937年）"
+role: "春和戏院后台总管，负责天桥与绳排"
+master_reference: "art/角色设定/陈九生_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "reference_five_paper_effigy_90_dec24_locked"
+body_proportion: "群像前五人视觉包络；窄肩、中偏沉、单脚承重、纵向稳定；7.75头身仅作诊断"
+face_detail_level: "全身/转面L2、表情近景L3；窄长脸、偏长中庭、细暗无高光眼、简化鼻嘴"
+default_costume: "近黑短外套叠较亮的板岩灰长衣，窄薄黑鞋；短外套与长衣保持清楚明度分层"
+signature_props: []
+visual_keywords:
+  - "后台总管"
+  - "稳与熟练"
+  - "中偏沉"
+  - "克制阴森"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "军姿或证件照站姿"
+  - "宽肩方盒轮廓"
+  - "凶相、反派脸或秘密编码"
+  - "大鞋与厚黑接地阴影"
+  - "高面部细节或高光大眼"
+standardization_required: false
+standardization_scope: []
+notes: "依据 DEC-20260830-24，以90分通过参考前五人完整纸偶硬门槛并锁定。四十五岁后台总管、中偏沉单脚承重、单侧肘弯和后错脚不变；当前仍无确认的固定随身物。"

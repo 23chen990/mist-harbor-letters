@@ -1,0 +1,27 @@
+character_id: "fang_zhongshan"
+name_cn: "方仲山"
+age: "53岁（1937年）"
+role: "春和戏院老账房兼前场管事"
+master_reference: "art/角色设定/方仲山_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "reference_five_paper_effigy_93_dec24_locked"
+body_proportion: "群像前五人视觉包络；窄肩、长颈、细长四肢与纸扎停顿；旧v4超长比例仅留作历史追溯"
+face_detail_level: "全身/转面接近L2、状态近景不高于L3；扁窄细框眼镜下仅保留短眼线、暗点瞳孔、断鼻线与单口线"
+default_costume: "浅板岩灰长衫中段叠近黑袖面与侧片、窄薄黑鞋；低饱和旧印刷与纸扎人轮廓"
+signature_props:
+  - "扁窄低反光细线框眼镜"
+visual_keywords:
+  - "老账房兼前场管事"
+  - "可靠长辈的第一印象"
+  - "静止难读"
+  - "纸扎人微恐怖"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "大圆学者眼镜、粗黑现代镜框或侦探化眼镜"
+  - "反派脸、冷笑、黑眼窝或恐怖妆"
+  - "逐根发丝、完整虹膜、高光眼或写实鼻唇"
+  - "俊美、儒雅名士、教授或民国贵公子模板"
+  - "把标准板陈列物自动升级为固定剧情道具"
+standardization_required: false
+standardization_scope: []
+notes: "依据 DEC-20260830-24，以93分通过参考前五人完整纸偶硬门槛并锁定。五十三岁老账房兼前场管事、扁窄细框眼镜与低信息面部继续固定；旧v4画布和连续暗纹例外不恢复。"

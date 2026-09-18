@@ -1,0 +1,30 @@
+character_id: "bai_suqiu"
+name_cn: "白素秋"
+age: "22岁（1917年，卒年）"
+role: "1917年春和戏院台柱兼东家"
+master_reference: "art/角色设定/白素秋_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "dec_20260830_19_user_selected_locked_exception"
+body_proportion: "沿用原选标准板的瘦长纵向比例与舞台画像站姿；不再自动改成朴素工作姿态"
+face_detail_level: "沿用原选母版的精致盘发、较完整眼唇与锐利侧向视线；高于共同基线但属于单角色特批"
+default_costume: "深青暗花高领长袍/旗袍式轮廓、酒红披肩、低跟鞋、精致盘发；按原选母版锁定"
+signature_props: []
+visual_keywords:
+  - "台柱兼东家"
+  - "清醒"
+  - "锐利"
+  - "有故事感"
+  - "华丽但克制"
+  - "舞台人物的体面与记忆点"
+forbidden_drift:
+  - "比原选母版更紧、更艳或更高开衩的都市旗袍"
+  - "亮片珠宝、影楼高光或现代名媛社交姿势"
+  - "鬼女"
+  - "委屈、泪感、哀怨或脆弱"
+  - "被动悲剧美人或纯受害者气质"
+  - "重新降级为无纹样黑色工作服或朴素宽松长上衣"
+standardization_required: false
+standardization_scope:
+  - "项目负责人要求原图原样锁定，不自动裁切、重排、修脸、换装或降纹样"
+  - "运行立绘延展须引用本母版，具体道具仍按场次权威依据"
+notes: "依据 CURRENT_TRUTH、人物与前史 v6 与 DEC-20260830-19。正式年龄仍为1917年二十二岁；母版视觉偏成熟是已知差异。原图中的圆扇、披肩、挂饰与信笺本不进入 signature_props，不反推剧情道具。白素秋为 locked-exception，不作为其他角色共同画法基线。"

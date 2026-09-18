@@ -1,0 +1,33 @@
+character_id: "xu_jichuan"
+name_cn: "许济川"
+age: "52岁（1937年）"
+role: "春和戏院医生"
+master_reference: "art/角色设定/许济川_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "local_revision_v1_locked"
+body_proportion: "7.75头身基准（允许7.5—8.0）；清瘦、窄肩、直身、收束"
+face_detail_level: "全身/转面L2、表情近景L3；圆框眼镜下保持细眼和简化鼻嘴"
+default_costume: "黑灰外衣叠灰色长衫，黑鞋"
+signature_props:
+  - "圆框眼镜"
+  - "医药包"
+  - "病历本"
+  - "钢笔"
+visual_keywords:
+  - "职业性强"
+  - "克制"
+  - "清瘦"
+  - "情绪不外露"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "现代白大褂"
+  - "教授模板"
+  - "过度儒雅或忧郁"
+  - "恢复已撤销误定稿"
+  - "用错误年龄文字作为正式事实"
+standardization_required: true
+standardization_scope:
+  - "统一1536×1024固定网格与后期文字排版"
+  - "加强52岁可读性"
+  - "与林怀安拉开外套和肩宽轮廓"
+notes: "局部修正版已由 DEC-20260830-09 批准并归档为正式标准板。`outputs/美术概念/许济川_局部修正版_待确认.png` 保留为过程源；`outputs/美术概念/许济川_误定稿_已撤销.png` 仅供追溯。当前 locked 状态不取消 DEC-20260830-08 要求的后续统一修订。"

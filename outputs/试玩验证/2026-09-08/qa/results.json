@@ -1,0 +1,399 @@
+[
+  {
+    "test": "tests/test_player_response_ui.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_player_response_ui.gd --log-file /private/tmp/fog_opening_qa/test_player_response_ui.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.649,
+    "summary": [
+      "PASS: player response UI"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_player_response_ui.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_player_response_ui.engine.log"
+  },
+  {
+    "test": "tests/test_manual_line_advance.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_manual_line_advance.gd --log-file /private/tmp/fog_opening_qa/test_manual_line_advance.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.454,
+    "summary": [
+      "PASS: manual line advance"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_manual_line_advance.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_manual_line_advance.engine.log"
+  },
+  {
+    "test": "tests/test_s00_opening.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_s00_opening.gd --log-file /private/tmp/fog_opening_qa/test_s00_opening.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.346,
+    "summary": [
+      "PASS: DEC34 five-line opening and knowledge release"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_s00_opening.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_s00_opening.engine.log"
+  },
+  {
+    "test": "tests/test_interview_disclosure.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_interview_disclosure.gd --log-file /private/tmp/fog_opening_qa/test_interview_disclosure.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 4.795,
+    "summary": [
+      "PASS: C04 disclosure/custody, three paper routes, and 12 C14 observation combinations via UI"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_interview_disclosure.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_interview_disclosure.engine.log"
+  },
+  {
+    "test": "tests/test_prelude_transition_timing.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_prelude_transition_timing.gd --log-file /private/tmp/fog_opening_qa/test_prelude_transition_timing.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 2.028,
+    "summary": [
+      "PASS: DEC34 preparation timing, including letter as fourth check"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_prelude_transition_timing.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_prelude_transition_timing.engine.log"
+  },
+  {
+    "test": "tests/test_prelude_free_exploration.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_prelude_free_exploration.gd --log-file /private/tmp/fog_opening_qa/test_prelude_free_exploration.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 1.861,
+    "summary": [
+      "PASS: DEC34 four newsroom checks go directly to letter preparation"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_prelude_free_exploration.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_prelude_free_exploration.engine.log"
+  },
+  {
+    "test": "tests/test_reply_search_flow.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_reply_search_flow.gd --log-file /private/tmp/fog_opening_qa/test_reply_search_flow.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 2.226,
+    "summary": [
+      "PASS: letter-to-reply-search flow"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_reply_search_flow.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_reply_search_flow.engine.log"
+  },
+  {
+    "test": "tests/test_choice_backtracking.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_choice_backtracking.gd --log-file /private/tmp/fog_opening_qa/test_choice_backtracking.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.496,
+    "summary": [
+      "PASS: exploration backtracking preserves earlier spoken history and restart resets all"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_choice_backtracking.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_choice_backtracking.engine.log"
+  },
+  {
+    "test": "tests/test_chapter_switching.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_chapter_switching.gd --log-file /private/tmp/fog_opening_qa/test_chapter_switching.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.359,
+    "summary": [
+      "PASS: chapter switching test button"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_chapter_switching.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_chapter_switching.engine.log"
+  },
+  {
+    "test": "tests/test_continuous_yutang_scene.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_continuous_yutang_scene.gd --log-file /private/tmp/fog_opening_qa/test_continuous_yutang_scene.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.362,
+    "summary": [
+      "PASS: v6 continuous scene contract"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_continuous_yutang_scene.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_continuous_yutang_scene.engine.log"
+  },
+  {
+    "test": "tests/test_game_state.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_game_state.gd --log-file /private/tmp/fog_opening_qa/test_game_state.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.257,
+    "summary": [
+      "PASS: natural-language knowledge state"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_game_state.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_game_state.engine.log"
+  },
+  {
+    "test": "tests/test_inner_monologue_layout.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_inner_monologue_layout.gd --log-file /private/tmp/fog_opening_qa/test_inner_monologue_layout.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.356,
+    "summary": [
+      "PASS: inner monologue lower dialogue layout"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_inner_monologue_layout.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_inner_monologue_layout.engine.log"
+  },
+  {
+    "test": "tests/test_narration_speaker_ui.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_narration_speaker_ui.gd --log-file /private/tmp/fog_opening_qa/test_narration_speaker_ui.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.365,
+    "summary": [
+      "PASS: narration speaker UI"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_narration_speaker_ui.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_narration_speaker_ui.engine.log"
+  },
+  {
+    "test": "tests/test_opening_demo_logic.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_opening_demo_logic.gd --log-file /private/tmp/fog_opening_qa/test_opening_demo_logic.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.453,
+    "summary": [
+      "PASS: DEC34 opening logic and oral-only interview UI"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_opening_demo_logic.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_opening_demo_logic.engine.log"
+  },
+  {
+    "test": "tests/test_rejected_manuscript_ui.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_rejected_manuscript_ui.gd --log-file /private/tmp/fog_opening_qa/test_rejected_manuscript_ui.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.365,
+    "summary": [
+      "PASS: rejected manuscript UI"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_rejected_manuscript_ui.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_rejected_manuscript_ui.engine.log"
+  },
+  {
+    "test": "tests/test_reporter_public_death_conclusion.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_reporter_public_death_conclusion.gd --log-file /private/tmp/fog_opening_qa/test_reporter_public_death_conclusion.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.255,
+    "summary": [
+      "PASS: reporter public death conclusion is synchronized"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_reporter_public_death_conclusion.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_reporter_public_death_conclusion.engine.log"
+  },
+  {
+    "test": "tests/test_reporter_surname_formalization.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_reporter_surname_formalization.gd --log-file /private/tmp/fog_opening_qa/test_reporter_surname_formalization.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.252,
+    "summary": [
+      "PASS: reporter surname formalization is synchronized"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_reporter_surname_formalization.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_reporter_surname_formalization.engine.log"
+  },
+  {
+    "test": "tests/test_secret_release_content.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_secret_release_content.gd --log-file /private/tmp/fog_opening_qa/test_secret_release_content.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.259,
+    "summary": [
+      "PASS: v6 first-chapter secret release"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_secret_release_content.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_secret_release_content.engine.log"
+  },
+  {
+    "test": "tests/test_shen_yanzhou_portrait.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_shen_yanzhou_portrait.gd --log-file /private/tmp/fog_opening_qa/test_shen_yanzhou_portrait.engine.log",
+    "exit": 1,
+    "result": "FAIL",
+    "seconds": 0.451,
+    "summary": [
+      "ERROR: 沈砚舟序章实机立绘资源尚未建立",
+      "ERROR: 沈砚舟说话时没有使用真实透明立绘",
+      "ERROR: 沈砚舟真实立绘已接入后仍显示技术占位文字",
+      "ERROR: FAIL: 3 Shen-Yanzhou portrait assertions"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_shen_yanzhou_portrait.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_shen_yanzhou_portrait.engine.log"
+  },
+  {
+    "test": "tests/test_story_content.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_story_content.gd --log-file /private/tmp/fog_opening_qa/test_story_content.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.365,
+    "summary": [
+      "PASS: v6 active story content"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_story_content.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_story_content.engine.log"
+  },
+  {
+    "test": "tests/test_v27_story_content.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_v27_story_content.gd --log-file /private/tmp/fog_opening_qa/test_v27_story_content.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.258,
+    "summary": [
+      "PASS: legacy v2/v3 runtime data retired"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_v27_story_content.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_v27_story_content.engine.log"
+  },
+  {
+    "test": "tests/test_v343_story_content.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_v343_story_content.gd --log-file /private/tmp/fog_opening_qa/test_v343_story_content.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.252,
+    "summary": [
+      "PASS: v6 workbook content replaces v3.4.3"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_v343_story_content.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_v343_story_content.engine.log"
+  },
+  {
+    "test": "tests/test_v6_workbook_migration.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_v6_workbook_migration.gd --log-file /private/tmp/fog_opening_qa/test_v6_workbook_migration.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.257,
+    "summary": [
+      "PASS: v6 workbook migration"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_v6_workbook_migration.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_v6_workbook_migration.engine.log"
+  },
+  {
+    "test": "tests/test_workbook_sync.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_workbook_sync.gd --log-file /private/tmp/fog_opening_qa/test_workbook_sync.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.354,
+    "summary": [
+      "PASS: Excel workbook is the single story authoring source"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_workbook_sync.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_workbook_sync.engine.log"
+  },
+  {
+    "test": "tests/test_opening_revision.py",
+    "kind": "python",
+    "command": "python3 -B tests/test_opening_revision.py",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.075,
+    "summary": [
+      "Ran 6 tests in 0.002s",
+      "OK"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_opening_revision.py.log",
+    "engine_log": null
+  },
+  {
+    "test": "tests/test_reporter_public_death_conclusion.py",
+    "kind": "python",
+    "command": "python3 -B tests/test_reporter_public_death_conclusion.py",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.041,
+    "summary": [
+      "PASS: reporter public death conclusion is synchronized"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_reporter_public_death_conclusion.py.log",
+    "engine_log": null
+  },
+  {
+    "test": "tests/test_workflow_metadata.py",
+    "kind": "python",
+    "command": "python3 -B tests/test_workflow_metadata.py",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 0.766,
+    "summary": [
+      "Ran 13 tests in 0.709s",
+      "OK"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_workflow_metadata.py.log",
+    "engine_log": null
+  },
+  {
+    "test": "tests/test_full_flow.gd",
+    "kind": "godot",
+    "command": "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_full_flow.gd --log-file /private/tmp/fog_opening_qa/test_full_flow.engine.log",
+    "exit": 0,
+    "result": "PASS",
+    "seconds": 2.582,
+    "summary": [
+      "PASS: DEC34 real-button S00 and C01-C22 full flow"
+    ],
+    "warnings": [],
+    "log": "/private/tmp/fog_opening_qa/test_full_flow.gd.log",
+    "engine_log": "/private/tmp/fog_opening_qa/test_full_flow.engine.log"
+  }
+]

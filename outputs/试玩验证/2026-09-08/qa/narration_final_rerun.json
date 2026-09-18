@@ -1,0 +1,17 @@
+{
+  "exit": 0,
+  "before": "3a2ce1730a5ad4bd4c7becdf9b659c7c94e15b3da013b10d7fada32b94bd16a6",
+  "after": "3a2ce1730a5ad4bd4c7becdf9b659c7c94e15b3da013b10d7fada32b94bd16a6",
+  "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nPASS: narration speaker UI\n",
+  "command": [
+    "/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot",
+    "--headless",
+    "--path",
+    ".",
+    "--script",
+    "res://tests/test_narration_speaker_ui.gd",
+    "--log-file",
+    "/private/tmp/fog_opening_qa/test_narration_speaker_ui.final.engine.log"
+  ],
+  "log": "/private/tmp/fog_opening_qa/test_narration_speaker_ui.final.log"
+}

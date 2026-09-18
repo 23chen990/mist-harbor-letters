@@ -1,0 +1,30 @@
+character_id: "lin_yutang"
+name_cn: "林玉棠"
+age: "20岁（1937年）"
+role: "春和戏院班主之女"
+master_reference: "art/角色设定/林玉棠_角色设定_定稿.png"
+status: "locked"
+current_reference_version: "current_locked"
+body_proportion: "7.75头身基准（允许7.5—8.0）；清瘦、肩宽克制"
+face_detail_level: "全身/转面L2、表情近景L3；避免大眼、浓睫、尖小V脸和瓷白皮肤"
+default_costume: "浅色中式上衣、深色长百褶裙、深色低鞋，利落短发"
+signature_props: []
+visual_keywords:
+  - "二十岁"
+  - "克制但有主动性"
+  - "有判断力"
+  - "不软弱"
+  - "体面但不华丽"
+  - "旧纸低饱和"
+forbidden_drift:
+  - "怨灵式女性"
+  - "阴郁女主"
+  - "乖学生或学生制服感"
+  - "明显敌意脸"
+  - "乙女游戏型成熟娴静"
+face_review_required: true
+standardization_required: true
+standardization_scope:
+  - "降低眼睛、嘴唇、皮肤和头发精修度"
+  - "统一1536×1024固定网格、版式与文件命名"
+notes: "依据 DEC-20260830-10，当前标准板保持 locked；画面中的信封和钥匙明确不属于固定随身物，因此 signature_props 保持空列表。面部圆润度、洁净度与眼睛信息量差异必须进入后续统一审查，本轮不修图。"

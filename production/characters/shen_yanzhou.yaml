@@ -1,0 +1,31 @@
+character_id: "shen_yanzhou"
+name_cn: "沈砚舟"
+age: "约25岁（1937年）"
+role: "《雾港日报》年轻记者"
+master_reference: "art/角色设定/沈砚舟_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "reference_five_paper_effigy_92_dec24_locked"
+body_proportion: "群像前五人视觉包络；瘦长、小头、窄肩、长直四肢与轻微内收停顿；7.75头身仅作诊断"
+face_detail_level: "全身/转面L2、表情近景L3；细眼、低眼部信息量、简化鼻嘴"
+default_costume: "冷灰长衫中段叠近黑外侧襟片与袖面、黑鞋；以中灰/近黑大色块区分层次"
+signature_props:
+  - "采访本"
+  - "报纸剪报"
+  - "钢笔"
+  - "文件袋"
+visual_keywords:
+  - "年轻记者"
+  - "克制"
+  - "不精英"
+  - "轻微疲态"
+  - "平涂手绘"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "民国贵公子感"
+  - "福尔摩斯式侦探感"
+  - "过度俊美或精英化"
+  - "画得过于成熟"
+  - "高面部细节或高光大眼"
+standardization_required: false
+standardization_scope: []
+notes: "依据 DEC-20260830-24，以92分通过参考前五人完整纸偶硬门槛并锁定。身份、年龄、记者轮廓和采访物件边界不变；标准板陈列物不自动成为固定剧情道具。"

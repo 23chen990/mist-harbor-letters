@@ -1,0 +1,31 @@
+Working directory: /Users/kker/Documents/ChatGPT/解密
+
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_player_response_ui.gd --log-file /private/tmp/fog_opening_qa/test_player_response_ui.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_manual_line_advance.gd --log-file /private/tmp/fog_opening_qa/test_manual_line_advance.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_s00_opening.gd --log-file /private/tmp/fog_opening_qa/test_s00_opening.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_interview_disclosure.gd --log-file /private/tmp/fog_opening_qa/test_interview_disclosure.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_prelude_transition_timing.gd --log-file /private/tmp/fog_opening_qa/test_prelude_transition_timing.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_prelude_free_exploration.gd --log-file /private/tmp/fog_opening_qa/test_prelude_free_exploration.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_reply_search_flow.gd --log-file /private/tmp/fog_opening_qa/test_reply_search_flow.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_choice_backtracking.gd --log-file /private/tmp/fog_opening_qa/test_choice_backtracking.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_chapter_switching.gd --log-file /private/tmp/fog_opening_qa/test_chapter_switching.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_continuous_yutang_scene.gd --log-file /private/tmp/fog_opening_qa/test_continuous_yutang_scene.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_game_state.gd --log-file /private/tmp/fog_opening_qa/test_game_state.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_inner_monologue_layout.gd --log-file /private/tmp/fog_opening_qa/test_inner_monologue_layout.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_narration_speaker_ui.gd --log-file /private/tmp/fog_opening_qa/test_narration_speaker_ui.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_opening_demo_logic.gd --log-file /private/tmp/fog_opening_qa/test_opening_demo_logic.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_rejected_manuscript_ui.gd --log-file /private/tmp/fog_opening_qa/test_rejected_manuscript_ui.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_reporter_public_death_conclusion.gd --log-file /private/tmp/fog_opening_qa/test_reporter_public_death_conclusion.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_reporter_surname_formalization.gd --log-file /private/tmp/fog_opening_qa/test_reporter_surname_formalization.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_secret_release_content.gd --log-file /private/tmp/fog_opening_qa/test_secret_release_content.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_shen_yanzhou_portrait.gd --log-file /private/tmp/fog_opening_qa/test_shen_yanzhou_portrait.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_story_content.gd --log-file /private/tmp/fog_opening_qa/test_story_content.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_v27_story_content.gd --log-file /private/tmp/fog_opening_qa/test_v27_story_content.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_v343_story_content.gd --log-file /private/tmp/fog_opening_qa/test_v343_story_content.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_v6_workbook_migration.gd --log-file /private/tmp/fog_opening_qa/test_v6_workbook_migration.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_workbook_sync.gd --log-file /private/tmp/fog_opening_qa/test_workbook_sync.engine.log
+python3 -B tests/test_opening_revision.py
+python3 -B tests/test_reporter_public_death_conclusion.py
+python3 -B tests/test_workflow_metadata.py
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_full_flow.gd --log-file /private/tmp/fog_opening_qa/test_full_flow.engine.log
+/private/tmp/fog_harbor_godot/Godot.app/Contents/MacOS/Godot --headless --path . --script res://tests/test_narration_speaker_ui.gd --log-file /private/tmp/fog_opening_qa/test_narration_speaker_ui.final.engine.log

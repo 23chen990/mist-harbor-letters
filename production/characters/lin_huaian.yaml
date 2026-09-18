@@ -1,0 +1,33 @@
+character_id: "lin_huaian"
+name_cn: "林怀安"
+age: "49岁（1937年）"
+role: "春和戏院班主"
+master_reference: "art/角色设定/林怀安_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "expression_revision_v2_locked"
+body_proportion: "7.75头身基准（允许7.5—8.0）；瘦长、肩宽克制并保留承担重量的体态"
+face_detail_level: "全身/转面L2、表情近景L3；以眉眼张力、视线和少量年龄结构表现状态"
+default_costume: "深褐/炭黑外褂叠长衫，黑鞋"
+signature_props:
+  - "戏院钥匙"
+  - "旧信封"
+  - "账本"
+  - "怀表"
+visual_keywords:
+  - "克制"
+  - "谨慎"
+  - "能压事"
+  - "长期负重"
+  - "保持体面"
+  - "旧纸与中式旧印刷"
+forbidden_drift:
+  - "苦命路人"
+  - "一眼愧疚或心虚"
+  - "反派脸"
+  - "过度苦相"
+  - "五个状态只换文字、不换行为"
+standardization_required: true
+standardization_scope:
+  - "统一1536×1024固定网格与后期文字排版"
+  - "减少连续暗纹与苦相叠加"
+notes: "依据 CURRENT_TRUTH、人物与前史 v6、DEC-20260830-05。当前标准板取代表情不可辨识的早期候选稿；当前 locked 状态不取消后续统一修订。"

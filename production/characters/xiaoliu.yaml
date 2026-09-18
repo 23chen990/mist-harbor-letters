@@ -1,0 +1,26 @@
+character_id: "xiaoliu"
+name_cn: "小六"
+age: "待确认（1937年；当前仅确定为最年轻的侧台学徒）"
+role: "春和戏院侧台学徒/帮手（具体工种待确认）"
+master_reference: "art/角色设定/小六_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "reference_five_paper_effigy_92_dec24_locked"
+body_proportion: "群像前五人视觉包络；轻窄、肩胸内收、长直四肢、薄踝小鞋与等待指令的停顿"
+face_detail_level: "全身/转面L2、表情近景L3；窄平脸、细暗少眼白、简化鼻嘴与低体积脸颊"
+default_costume: "旧米白卷袖立领衫、近黑短坎肩、棕色布腰带、蓝炭灰窄裤与低窄黑鞋"
+signature_props: []
+visual_keywords:
+  - "最年轻侧台学徒"
+  - "等待指令"
+  - "轻窄"
+  - "克制阴森"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "健康运动型、可爱少年或学生模板"
+  - "宽肩厚胸、宽裤、大鞋或自信站姿"
+  - "把阿成的前进重心或深色短外套复制给小六"
+  - "擅自补确切年龄、具体工种、固定工具或秘密"
+  - "高面部细节、高光大眼或圆幼脸"
+standardization_required: false
+standardization_scope: []
+notes: "依据 DEC-20260830-24，以92分通过参考前五人完整纸偶硬门槛并锁定。最年轻侧台学徒、等待指令、浅衫深坎肩与布腰带的识别保留；确切年龄、具体工种、固定道具、秘密与知情范围继续待确认。"

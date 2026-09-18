@@ -1,0 +1,28 @@
+character_id: "gu_chengjun"
+name_cn: "顾承钧"
+age: "待确认（1937年）"
+role: "负责赵敬文案与林怀安案的警察"
+master_reference: "art/角色设定/顾承钧_角色标准板_定稿.png"
+status: "locked"
+current_reference_version: "reference_five_paper_effigy_91_dec24_locked"
+body_proportion: "群像前五人视觉包络；窄肩平胸、长直四肢、窄站距与低位程序手势；7.75头身仅作诊断"
+face_detail_level: "全身/转面L2、表情近景L3；近矩形窄脸、长直鼻、较明显耳廓、细暗无高光眼"
+default_costume: "近黑低冠大檐警帽、蓝炭灰短款立领警务制服、棕色窄腰带、低对比胸牌位置与暗铜短哨链、直筒裤、低窄黑鞋"
+signature_props: []
+visual_keywords:
+  - "城市警察"
+  - "程序控制"
+  - "职业两秒识别"
+  - "中等重量"
+  - "克制阴森"
+  - "旧印刷低饱和"
+forbidden_drift:
+  - "普通文人短褂或中山装换装"
+  - "军官、士兵、交通指挥或宣传画姿态"
+  - "宽站距、大掌命令与英雄化"
+  - "黑色电影侦探、风衣礼帽或现代警服"
+  - "武器、可读警号、机构文字或军衔"
+  - "腐败、无能、反派或嫌疑编码"
+standardization_required: false
+standardization_scope: []
+notes: "依据 DEC-20260830-24，以91分通过参考前五人完整纸偶硬门槛并锁定。城市警察与程序控制的职业轮廓保留；确切年龄、机构、警号与军衔仍待确认，任何徽记、链饰和文书不得反推正式事实。"

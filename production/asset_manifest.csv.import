@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bi8sciyhsq4iy"
+
+[deps]
+
+files=["res://production/asset_manifest.asset.translation", "res://production/asset_manifest.character.translation", "res://production/asset_manifest.shot.translation", "res://production/asset_manifest.story.translation", "res://production/asset_manifest.source.translation", "res://production/asset_manifest.file.translation", "res://production/asset_manifest.status.translation", "res://production/asset_manifest.priority.translation", "res://production/asset_manifest.version.translation", "res://production/asset_manifest.notes.translation"]
+
+source_file="res://production/asset_manifest.csv"
+dest_files=["res://production/asset_manifest.asset.translation", "res://production/asset_manifest.character.translation", "res://production/asset_manifest.shot.translation", "res://production/asset_manifest.story.translation", "res://production/asset_manifest.source.translation", "res://production/asset_manifest.file.translation", "res://production/asset_manifest.status.translation", "res://production/asset_manifest.priority.translation", "res://production/asset_manifest.version.translation", "res://production/asset_manifest.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
