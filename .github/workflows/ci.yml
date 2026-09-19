@@ -1,0 +1,88 @@
+name: CI
+
+# 本工作流是《雾港来信》唯一工程基线的质量门禁：
+# 任何 push / PR 到 main 都必须通过「元数据与结构校验」才能合入。
+# 规范依据：AGENTS.md 第 8 节（可复用文档/调度技能/元数据结构变更后须运行校验工具）。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-and-structure:
+    name: 元数据与结构校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 工作流元数据与知识索引校验（AGENTS.md §8）
+        run: python3 tools/validate_workflow_metadata.py --root .
+
+      - name: 必入关键文件检查
+        run: |
+          set -euo pipefail
+          files=(
+            "project.godot"
+            "AGENTS.md"
+            "README.md"
+            ".gitignore"
+            "docs/CURRENT_TRUTH.md"
+            "docs/DECISIONS.md"
+            "docs/剧情修订稿_v6_人物与前史.md"
+            "docs/雾港来信_序章与第一章完整剧情信息树_v6.md"
+            "outputs/01a037d8-c4f0-70d3-bc69-8c3819094801/雾港来信_剧情作者工作簿.xlsx"
+            "content/程序生成_请勿手改/剧情剧本.csv"
+            ".agents/skills/mist-harbor-orchestrator/SKILL.md"
+          )
+          for f in "${files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "::error::缺失必入文件: $f"
+              exit 1
+            fi
+          done
+          echo "必入关键文件检查通过（共 ${#files[@]} 项）"
+
+      - name: 排除项未误入库检查
+        run: |
+          set -euo pipefail
+          for d in .godot .codex_spreadsheet_work; do
+            if git ls-files --error-unmatch "$d" >/dev/null 2>&1; then
+              echo "::error::可重建项被误入库: $d"
+              exit 1
+            fi
+          done
+          echo "排除项检查通过"
+
+  # ---- Godot headless 测试（待启用）----
+  # 当前 CI 只覆盖「工程结构 / 规范元数据」门禁。Godot 运行时回归测试需
+  # 先确认 CI 环境的 Godot 版本与项目 project.godot 的 config_version 匹配，
+  # 并完成资源导入（godot --headless --path . --quit），再启用下列 job：
+  #
+  # godot-tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: 安装 Godot 4.x (headless)
+  #       run: |
+  #         GODOT_VERSION=4.3
+  #         wget -q "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+  #         unzip -o Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+  #         mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+  #         chmod +x godot
+  #     - name: 导入项目
+  #       run: ./godot --headless --path . --quit
+  #     - name: 运行核心 headless 测试
+  #       run: |
+  #         ./godot --headless --path . --script res://tests/test_game_state.gd
+  #         ./godot --headless --path . --script res://tests/test_story_content.gd
