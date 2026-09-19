@@ -1,7 +1,7 @@
 name: CI
 
-# 本工作流是《雾港来信》唯一工程基线的质量门禁：
-# 任何 push / PR 到 main 都必须通过「元数据与结构校验」才能合入。
+# 本工作流是《雾港来信》R16.2 工程基线的质量门禁：
+# 任何 push / PR 到 main 都必须通过元数据、数据编译与 Godot headless 校验。
 # 规范依据：AGENTS.md 第 8 节（可复用文档/调度技能/元数据结构变更后须运行校验工具）。
 
 on:
@@ -39,10 +39,16 @@ jobs:
             ".gitignore"
             "docs/CURRENT_TRUTH.md"
             "docs/DECISIONS.md"
-            "docs/剧情修订稿_v6_人物与前史.md"
-            "docs/雾港来信_序章与第一章完整剧情信息树_v6.md"
-            "outputs/01a037d8-c4f0-70d3-bc69-8c3819094801/雾港来信_剧情作者工作簿.xlsx"
-            "content/程序生成_请勿手改/剧情剧本.csv"
+            "docs/r16_2/source/雾港来信_R16.2_核心玩法与选择兑现版_全篇互动剧本.docx"
+            "docs/r16_2/source/雾港来信_R16.2_程序接入表.xlsx"
+            "docs/r16_2/handoff/07_PACKAGE_MANIFEST.json"
+            "tools/r16_2_compile.py"
+            "tools/r16_2_validate.py"
+            "content/程序生成_请勿手改/r16_2_runtime.json"
+            "scenes/r16_2_main.tscn"
+            "scripts/r16_2_runtime.gd"
+            "tests/test_r16_2_runtime.gd"
+            "tests/test_r16_2_acceptance.gd"
             ".agents/skills/mist-harbor-orchestrator/SKILL.md"
           )
           for f in "${files[@]}"; do
@@ -64,25 +70,53 @@ jobs:
           done
           echo "排除项检查通过"
 
-  # ---- Godot headless 测试（待启用）----
-  # 当前 CI 只覆盖「工程结构 / 规范元数据」门禁。Godot 运行时回归测试需
-  # 先确认 CI 环境的 Godot 版本与项目 project.godot 的 config_version 匹配，
-  # 并完成资源导入（godot --headless --path . --quit），再启用下列 job：
-  #
-  # godot-tests:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: 安装 Godot 4.x (headless)
-  #       run: |
-  #         GODOT_VERSION=4.3
-  #         wget -q "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
-  #         unzip -o Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
-  #         mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
-  #         chmod +x godot
-  #     - name: 导入项目
-  #       run: ./godot --headless --path . --quit
-  #     - name: 运行核心 headless 测试
-  #       run: |
-  #         ./godot --headless --path . --script res://tests/test_game_state.gd
-  #         ./godot --headless --path . --script res://tests/test_story_content.gd
+  r16-2-data:
+    name: R16.2 数据编译与静态校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 编译 R16.2 runtime 数据
+        run: python3 tools/r16_2_compile.py --check
+
+      - name: R16.2 静态校验
+        run: python3 tools/r16_2_validate.py
+
+      - name: R16.2 Python 单元测试
+        run: python3 -m unittest discover -s tests -p 'test_r16_2_*.py'
+
+  # ---- Godot headless 测试 ----
+  # R16.2 运行时测试需要 Godot 4.7；旧 v6 内容测试不在本 job 中作为
+  # R16.2 事实验收。失败时必须在任务报告中区分过期测试与实现缺陷。
+  godot-tests:
+    name: Godot 4.7 headless runtime
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Godot 4.7 (headless)
+        run: |
+          set -euo pipefail
+          GODOT_VERSION=4.7
+          curl --fail --location --silent --show-error \
+            -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          chmod +x godot
+
+      - name: 导入项目并校验脚本
+        run: ./godot --headless --path . --editor --quit
+
+      - name: 运行 R16.2 runtime headless 测试
+        run: ./godot --headless --path . --script res://tests/test_r16_2_runtime.gd
+
+      - name: 运行 R16.2 四路线验收 smoke
+        run: ./godot --headless --path . --script res://tests/test_r16_2_acceptance.gd

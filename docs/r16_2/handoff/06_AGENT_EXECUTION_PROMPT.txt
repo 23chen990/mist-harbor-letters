@@ -1,0 +1,34 @@
+你现在接手 GitHub 仓库：
+https://github.com/23chen990/mist-harbor-letters
+
+请先完整阅读本 ZIP 的 `00_AGENT_START_HERE.md`，再阅读其余交接文档和 `source/` 中的 R16.2 正文/程序表。
+
+关键事实：
+- main 与 baseline-20260919 当前完全一致，commit 为 a920ebffff051bc005080bda536ceeda9966fe92。
+- GitHub 当前是旧 v6 正式工程基线，不是 R16.2。
+- 用户已明确要求以交接包 R16.2 作为当前开发目标。
+- 旧 v6 的剧情事实不得反向覆盖 R16.2。
+- 现有 Godot 工程能力应尽量复用。
+- 不要把 R16.2 做回复杂报纸编辑模拟器。
+
+你的第一轮任务不是重写剧情，而是：
+1. 建 r16.2-integration 分支。
+2. 登记 R16.2 canon switch，更新 AGENTS/CURRENT_TRUTH/DECISIONS/README/CI 权威体系。
+3. 设计并实现 R16.2 多 sheet → deterministic runtime data 的编译/适配层。
+4. 按 RuntimeContract/ConditionDSL 接通 Node/Choice/State/Snapshot。
+5. 先让 D00→U32 至少一条路线完整可运行。
+6. 再接 U08/U15/U27/U28 特殊轻交互。
+7. 接 AutoArticleRules + 完整报纸预览。
+8. 接四结局、回溯、人物 read gates。
+9. 建 R16.2 新测试，分类旧内容测试。
+10. 每轮 commit 后完整回报 SHA、变更文件、测试命令、结果、截图和未完成项。
+
+禁止：
+- 擅自改人物动机/增加秘密/增加结局。
+- 用旧 v6 剧情测试强迫新稿回退。
+- 在 main.gd 硬编码全篇对白。
+- 直接手改 generated CSV/JSON。
+- 实现逐条报纸编辑器。
+- 隐藏失败测试。
+
+完成第一阶段后先停下来交付可运行版本供审查，不要一次性做美术与平台发布。
