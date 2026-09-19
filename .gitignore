@@ -6,7 +6,8 @@
 .codex_spreadsheet_work/
 
 # ===== 编辑器 / 代理运行时目录 =====
-.agents/
+# 注意：.agents/skills/mist-harbor-orchestrator/ 是 AGENTS.md 第 8 节引用的
+# 规范必需 AI 团队调度技能，必须入库；不要整体排除 .agents/。
 
 # ===== OS / 临时文件 =====
 .DS_Store

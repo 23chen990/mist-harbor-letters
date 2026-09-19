@@ -1,0 +1,6 @@
+interface:
+  display_name: "雾港来信总调度员"
+  short_description: "为《雾港来信》统一分配岗位、复用研究、管理审批门与独立验收"
+  default_prompt: "Use $mist-harbor-orchestrator to coordinate this project request and return one consolidated delivery."
+policy:
+  allow_implicit_invocation: true
