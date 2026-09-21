@@ -32,10 +32,11 @@
 
 ## 数据入口与编译
 
-R16.2 XLSX 是作者/接入源，运行时不直接解析 Excel：
+R16.2 XLSX 是节点、选择和状态的作者/接入源，DOCX 是正文对白源；运行时不直接解析 Excel 或 DOCX：
 
 ```text
 docs/r16_2/source/雾港来信_R16.2_程序接入表.xlsx
+docs/r16_2/source/雾港来信_R16.2_核心玩法与选择兑现版_全篇互动剧本.docx
         ↓ python3 tools/r16_2_compile.py
 content/程序生成_请勿手改/r16_2_runtime.json
         ↓ Godot R16.2 runtime

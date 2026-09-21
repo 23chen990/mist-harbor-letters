@@ -21,8 +21,9 @@ from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "docs/r16_2/source/雾港来信_R16.2_程序接入表.xlsx"
+DEFAULT_SCRIPT_SOURCE = ROOT / "docs/r16_2/source/雾港来信_R16.2_核心玩法与选择兑现版_全篇互动剧本.docx"
 DEFAULT_OUTPUT = ROOT / "content/程序生成_请勿手改/r16_2_runtime.json"
-COMPILER_VERSION = "r16.2-compiler-1"
+COMPILER_VERSION = "r16.2-compiler-3"
 
 NS_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 NS_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -76,6 +77,22 @@ class CompileFailure(Exception):
     """Raised for deterministic source/contract errors."""
 
 
+DOCX_NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+_UNIT_HEADING = re.compile(r"^(?P<unit>(?:U\d+|D\d+(?:-[A-Z])?))｜")
+_SPEAKERS = (
+    "陈九生", "许济川", "方仲山", "周明远", "沈砚舟", "贺编辑", "老琴师",
+    "年轻武生", "报童", "小翠", "老梁", "阿成", "玉棠（前夜）", "玉棠",
+    "旁白",
+)
+_SPEAKER_PREFIX = re.compile(
+    r"(?:(?:【若 [^】]+】|\[若 [^\]]+\])\s*)*(?:"
+    + "|".join(re.escape(name) for name in _SPEAKERS)
+    + r")："
+ )
+_SENTENCE_BREAK = re.compile(r"(?<=[。！？])")
+_ACTION_WORDS = ("往", "看", "把", "拿", "推", "站", "走", "回", "转", "低", "抬", "翻", "从")
+
+
 def _local_name(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
@@ -94,6 +111,250 @@ def _xml_text(element: ET.Element | None) -> str:
     if element is None:
         return ""
     return "".join(element.itertext())
+
+
+def _docx_paragraphs(path: Path) -> list[str]:
+    """Read visible DOCX paragraphs without making Godot parse DOCX at runtime."""
+    if not path.is_file():
+        raise CompileFailure(f"script source not found: {path}")
+    try:
+        with zipfile.ZipFile(path) as archive:
+            root = ET.fromstring(archive.read("word/document.xml"))
+    except (KeyError, zipfile.BadZipFile, ET.ParseError) as exc:
+        raise CompileFailure(f"invalid DOCX script source: {path}") from exc
+    paragraphs: list[str] = []
+    for paragraph in root.findall(".//w:p", DOCX_NS):
+        text = "".join(node.text or "" for node in paragraph.findall(".//w:t", DOCX_NS)).strip()
+        paragraphs.append(text)
+    return paragraphs
+
+
+def _split_authored_sentences(text: str) -> list[str]:
+    """Split one author paragraph into player-clickable beats.
+
+    Speaker prefixes and conditional prefixes are retained on every sentence so
+    the runtime can filter route-specific lines without exposing the condition.
+    """
+    clean = text.strip()
+    if not clean:
+        return []
+    matches = list(_SPEAKER_PREFIX.finditer(clean))
+    chunks: list[str] = []
+    if not matches:
+        chunks = [clean]
+    else:
+        if matches[0].start() > 0:
+            prefix = clean[:matches[0].start()].strip()
+            if prefix:
+                chunks.append(prefix)
+        for index, match in enumerate(matches):
+            end = matches[index + 1].start() if index + 1 < len(matches) else len(clean)
+            chunks.append(clean[match.start():end].strip())
+    result: list[str] = []
+    for chunk in chunks:
+        prefix = ""
+        body = chunk
+        condition_prefixes: list[str] = []
+        while body.startswith("【若 ") or body.startswith("[若 "):
+            closing = "】" if body.startswith("【若 ") else "]"
+            end = body.find(closing)
+            if end < 0:
+                break
+            condition_prefixes.append(body[: end + 1])
+            body = body[end + 1 :].strip()
+        if condition_prefixes:
+            prefix = " ".join(condition_prefixes) + " "
+        # Some DOCX paragraphs combine a stage action and a quoted reply
+        # without a new speaker label (``阿成往账房方向看了一眼：‘……’``).
+        # Split that into a narration beat and a normal spoken beat so the UI
+        # does not show the action as a character's name.
+        mixed_action = re.match(
+            r"^(?P<action>(?P<name>[^：]{1,12})(?:" + "|".join(_ACTION_WORDS) + r")[^：]{0,36})：(?P<rest>.*)$",
+            body,
+        )
+        if mixed_action:
+            name = next((candidate for candidate in _SPEAKERS if mixed_action.group("action").startswith(candidate)), "")
+            if name:
+                action = mixed_action.group("action").strip()
+                rest = mixed_action.group("rest").strip()
+                action_beat = f"{prefix}旁白：{action}。"
+                if rest.startswith(("‘", "“")):
+                    speech = rest[1:].lstrip()
+                    speech = re.sub(r"([。！？])’(?=[\u4e00-\u9fff])", r"\1 ", speech)
+                    return [action_beat, f"{prefix}{name}：{speech}"]
+                rest = re.sub(r"([。！？])’(?=[\u4e00-\u9fff])", r"\1 ", rest)
+                return [f"{prefix}旁白：{action}，{rest}"]
+        sentences = [part.strip() for part in _SENTENCE_BREAK.split(body) if part.strip()]
+        if not sentences:
+            continue
+        # Keep the speaker label on every beat.  This makes each click
+        # self-contained and prevents a sentence from looking like narration.
+        speaker = ""
+        colon = body.find("：")
+        if colon >= 0:
+            speaker = body[: colon + 1]
+            sentence_body = body[colon + 1 :].strip()
+            sentences = [part.strip() for part in _SENTENCE_BREAK.split(sentence_body) if part.strip()]
+        for sentence_index, sentence in enumerate(sentences):
+            # The DOCX uses a few typographic continuation paragraphs for
+            # closing quotes and stage separators.  They have no player-facing
+            # content and otherwise become a blank-looking click.
+            if sentence.strip() in {"/", "\\", "’", "'", "”", '"', "‘", "“"}:
+                continue
+            # Word's quote runs occasionally leave a closing quote at the
+            # start of the next sentence.  It is punctuation, not dialogue
+            # content, so normalize it away before presenting the beat.
+            sentence = re.sub(r"：\s*[’”]", "：", sentence)
+            sentence = re.sub(r"^[’”]\s*", "", sentence)
+            sentence = re.sub(r"([。！？])’(?=[\u4e00-\u9fff])", r"\1 ", sentence)
+            # A handful of authored paragraphs repeat the speaker name in a
+            # narration clause (for example ``玉棠：玉棠把采访本推回``).  Keep
+            # the sentence attached to the speaker while removing the doubled
+            # name from the visible body.
+            if speaker and sentence.startswith(speaker[:-1]):
+                # This is an authored stage sentence such as
+                # ``玉棠把采访本推回给你`` or ``阿成往账房方向看了一眼``
+                # inside a paragraph whose preceding line had a speaker label.
+                # Render it as narration so the name is not duplicated in the
+                # speaker header and the action remains intact.
+                rendered = f"{prefix}旁白：{sentence}"
+                if re.fullmatch(r"(?:旁白：)?D\d+(?:-[A-Z])?。?", rendered.strip()):
+                    continue
+                result.append(rendered.strip())
+                continue
+            if speaker:
+                rendered = f"{prefix}{speaker}{sentence}"
+            else:
+                rendered = f"{prefix}{sentence}"
+            # Unit labels occasionally sit at the beginning of the performance
+            # paragraph (``旁白：D65。``).  They are authoring metadata, not a
+            # line for the player to click.
+            if re.fullmatch(r"(?:旁白：)?D\d+(?:-[A-Z])?。?", rendered.strip()):
+                continue
+            result.append(rendered.strip())
+    return result
+
+
+def _split_condition_segments(text: str) -> list[str]:
+    """Separate inline conditional branches from the preceding sentence."""
+    parts = re.split(r"(?=【若\s|\[若\s)", text)
+    return [part.strip() for part in parts if part.strip()]
+
+
+def _extract_dialogue_beats(path: Path, nodes: dict[str, dict[str, Any]]) -> dict[str, list[str]]:
+    """Map the authoritative DOCX performance text onto runtime NodeIDs.
+
+    The workbook remains the source for routing and state.  This extraction only
+    supplies player-visible prose, preserving conditional prefixes for the
+    runtime's whitelist evaluator.  Choice tables, production notes and puzzle
+    solutions are intentionally excluded.
+    """
+    paragraphs = _docx_paragraphs(path)
+    unit_to_node: dict[str, str] = {}
+    for node_id, row in nodes.items():
+        unit = str(row.get("unit_id", ""))
+        if not unit:
+            continue
+        # D65-B/D65-C are implementation nodes under U28; U28's authored
+        # performance text belongs to the player-facing D65 scene.
+        if unit not in unit_to_node or node_id == "D65":
+            unit_to_node[unit] = node_id
+    unit_to_node["P00"] = "D00"
+    current_unit = ""
+    collecting = False
+    skip_next = False
+    stop_body = False
+    sections: dict[str, list[str]] = {}
+    for raw in paragraphs:
+        text = raw.strip()
+        heading = _UNIT_HEADING.match(text)
+        if heading:
+            current_unit = heading.group("unit")
+            sections.setdefault(current_unit, [])
+            collecting = current_unit not in {"D15-B", "D65-B", "D65-C"}
+            skip_next = False
+            stop_body = False
+            continue
+        if text == "冷开场｜戏台上的十秒":
+            current_unit = "P00"
+            sections.setdefault(current_unit, [])
+            collecting = True
+            skip_next = False
+            stop_body = False
+            continue
+        if not current_unit or not collecting or stop_body or not text:
+            continue
+        if text in {"时间", "地点"}:
+            skip_next = True
+            continue
+        if skip_next:
+            skip_next = False
+            continue
+        if text == "本场体验目的":
+            skip_next = True
+            continue
+        if text.startswith(("玩家选择", "互动操作", "玩家操作", "Choice ID", "内部ID", "卡片内容")):
+            stop_body = True
+            continue
+        if text.startswith(("制作说明", "成功反馈", "失败反馈")):
+            continue
+        if text.startswith(("第一章｜", "第二章｜", "第三章｜", "第四章｜", "【条件反馈】")):
+            continue
+        if text.startswith(("A", "B", "C", "D", "E")) and len(text) < 3:
+            continue
+        if current_unit in {"U27", "D27"} and "轻交互" in text:
+            # Keep the surrounding in-world narration, but remove the inline
+            # production note describing the proof-check interaction.
+            text = re.sub(
+                r"【轻交互[^】]*】只点出一句“现在不能直接这样写进报纸”的话。"
+                r"答错只回看对应采访原话，不扣体力、不直接给答案。",
+                "",
+                text,
+            ).strip()
+        if "玩家选择｜" in text:
+            text = text.split("玩家选择｜", 1)[0].strip()
+        if not text:
+            continue
+        for segment in _split_condition_segments(text):
+            sections[current_unit].extend(_split_authored_sentences(segment))
+
+    result: dict[str, list[str]] = {}
+    for unit, node_id in unit_to_node.items():
+        beats = sections.get(unit, [])
+        if beats:
+            result[node_id] = beats
+    return result
+
+
+def _validate_dialogue_conditions(
+    dialogue_beats: dict[str, list[str]],
+    states: dict[str, dict[str, Any]],
+    errors: list[str],
+) -> None:
+    """Validate conditional prefixes carried from the authoritative DOCX.
+
+    Dialogue conditions are not workbook rows, so they need a separate pass to
+    enforce the same typed-key and enum checks as node/choice conditions.  The
+    script uses Chinese ``且/或`` in a few display guards; normalize those
+    spellings before sending the expression through the shared DSL parser.
+    """
+    for node_id, beats in dialogue_beats.items():
+        for index, raw in enumerate(beats):
+            text = str(raw).strip()
+            while text.startswith("【若 ") or text.startswith("[若 "):
+                closing = "】" if text.startswith("【若 ") else "]"
+                end = text.find(closing)
+                if end < 0:
+                    errors.append(f"Dialogue[{node_id}][{index}]: unterminated condition prefix")
+                    break
+                expression = text[2:end].strip().replace("且", " AND ").replace("或", " OR ")
+                _validate_condition_expression(
+                    expression,
+                    f"Dialogue[{node_id}][{index}]",
+                    states,
+                    errors,
+                )
+                text = text[end + 1 :].strip()
 
 
 class XlsxReader:
@@ -729,7 +990,7 @@ def _validate_contract(raw: dict[str, list[dict[str, Any]]]) -> tuple[list[str],
     return errors, warnings, indexed
 
 
-def compile_workbook(source: Path) -> dict[str, Any]:
+def compile_workbook(source: Path, script_source: Path = DEFAULT_SCRIPT_SOURCE) -> dict[str, Any]:
     raw_matrices = XlsxReader(source).load()
     raw_rows = {name: _rows_from_matrix(matrix) for name, matrix in raw_matrices.items()}
     errors, warnings, indexed = _validate_contract(raw_rows)
@@ -737,6 +998,7 @@ def compile_workbook(source: Path) -> dict[str, Any]:
         raise CompileFailure("\n".join(errors))
 
     source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    script_hash = hashlib.sha256(script_source.read_bytes()).hexdigest()
     rows = {name: _canonical_rows(values) for name, values in raw_rows.items()}
     data: dict[str, Any] = {
         "schema_version": "r16.2",
@@ -745,6 +1007,8 @@ def compile_workbook(source: Path) -> dict[str, Any]:
             "version": COMPILER_VERSION,
             "source": "docs/r16_2/source/雾港来信_R16.2_程序接入表.xlsx",
             "source_sha256": source_hash,
+            "script_source": "docs/r16_2/source/雾港来信_R16.2_核心玩法与选择兑现版_全篇互动剧本.docx",
+            "script_source_sha256": script_hash,
         },
         "meta": {
             "title": "《雾港来信》R16.2",
@@ -793,6 +1057,14 @@ def compile_workbook(source: Path) -> dict[str, Any]:
             data[target] = data[source_key]
         elif source_key in rows:
             data[target] = rows[source_key]
+    dialogue_beats = _extract_dialogue_beats(script_source, data["nodes"])
+    dialogue_errors: list[str] = []
+    _validate_dialogue_conditions(dialogue_beats, data["states"], dialogue_errors)
+    if dialogue_errors:
+        raise CompileFailure("\n".join(dialogue_errors))
+    for node_id, beats in dialogue_beats.items():
+        if node_id in data["nodes"]:
+            data["nodes"][node_id]["dialogue_beats"] = beats
     return data
 
 
@@ -805,6 +1077,7 @@ def _write_json(output: Path, data: dict[str, Any]) -> None:
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--script-source", type=Path, default=DEFAULT_SCRIPT_SOURCE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--check", action="store_true", help="validate and compare deterministic output without writing")
     return parser.parse_args(argv)
@@ -813,9 +1086,10 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv or sys.argv[1:])
     source = args.source if args.source.is_absolute() else ROOT / args.source
+    script_source = args.script_source if args.script_source.is_absolute() else ROOT / args.script_source
     output = args.output if args.output.is_absolute() else ROOT / args.output
     try:
-        data = compile_workbook(source)
+        data = compile_workbook(source, script_source)
         if args.check:
             if not output.is_file():
                 raise CompileFailure(f"deterministic output missing: {output}")

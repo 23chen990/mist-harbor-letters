@@ -12,6 +12,7 @@ func _init() -> void:
 
 func _run() -> void:
 	_test_typed_condition_literals()
+	_test_chinese_dialogue_condition_visibility()
 	var runtime = RuntimeScript.new()
 	_expect(runtime.load_runtime(), "R16.2 runtime JSON 无法加载")
 	if failures > 0:
@@ -19,12 +20,18 @@ func _run() -> void:
 		return
 	var event: Dictionary = runtime.start()
 	var guard := 0
-	while guard < 160 and str(event.get("kind", "")) != "ending":
+	while guard < 2000 and str(event.get("kind", "")) != "ending":
 		guard += 1
 		var kind := str(event.get("kind", ""))
 		if kind == "error":
 			_expect(false, "运行时错误：%s" % str(event.get("error", "")))
 			break
+		if runtime.pending_kind == "dialogue":
+			event = runtime.advance_dialogue()
+			continue
+		if runtime.pending_kind == "choice_feedback":
+			event = runtime.advance_choice_feedback()
+			continue
 		if runtime.pending_kind == "puzzle":
 			if runtime.pending_puzzle_id == "P_U15_CHAIN":
 				event = runtime.solve_puzzle(["A", "B", "C", "D", "E"])
@@ -45,7 +52,7 @@ func _run() -> void:
 			event = runtime.confirm_headline()
 		else:
 			event = runtime.choose(selected_choice_id)
-	_expect(guard < 160, "R16.2 canonical route exceeded step guard")
+	_expect(guard < 2000, "R16.2 canonical route exceeded step guard")
 	_expect(str(event.get("kind", "")) == "ending", "R16.2 canonical route did not reach ending")
 	_expect(str(event.get("ending_id", "")) in ["E01", "E02", "E03", "E04"], "ending id invalid")
 	_expect(runtime.state.get_value("typeset_confirmed", false) == true, "确认交排没有写入 typeset_confirmed")
@@ -63,12 +70,34 @@ func _test_typed_condition_literals() -> void:
 	evaluator.configure({
 		"count": {"type": "int"},
 		"flag": {"type": "bool"},
+		"left": {"type": "bool"},
+		"right": {"type": "bool"},
 	})
 	var values: Dictionary = {"count": 2, "flag": false}
 	_expect(evaluator.evaluate("count=2", values), "typed int equality should compare numerically")
 	_expect(not evaluator.evaluate("count=1", values), "typed int equality must not coerce 2 to true")
 	_expect(evaluator.evaluate("flag=0", values), "bool 0 literal should compare as false")
 	_expect(not evaluator.evaluate("flag=1", {"count": 2, "flag": false}), "bool 1 literal should compare as true only when flag is true")
+	_expect(evaluator.evaluate("left=1 且 right=1", {"left": true, "right": true}), "Chinese AND condition should be supported")
+	_expect(evaluator.evaluate("left=1 或 right=1", {"left": false, "right": true}), "Chinese OR condition should be supported")
+
+
+func _test_chinese_dialogue_condition_visibility() -> void:
+	var runtime = RuntimeScript.new()
+	_expect(runtime.load_runtime(), "Chinese dialogue condition test could not load runtime")
+	if not runtime.errors.is_empty():
+		return
+	_expect(runtime.state.apply_mutations("chen_confession_reportable=1; article_final_full=1; typeset_confirmed=1"), "Chinese dialogue condition setup failed")
+	var event: Dictionary = runtime.enter_node("D66")
+	var saw_conditional_line := false
+	var guard := 0
+	while runtime.pending_kind == "dialogue" and guard < 100:
+		if str(event.get("summary", "")).contains("这句你还是用了"):
+			saw_conditional_line = true
+		guard += 1
+		event = runtime.advance_dialogue()
+	_expect(saw_conditional_line, "Chinese AND dialogue condition should reveal the matching D66 line")
+	_expect(runtime.state.mutation_errors.is_empty(), "Chinese dialogue condition should not create evaluator errors")
 
 
 func _test_global_survives_story_rollback(runtime: RefCounted) -> void:

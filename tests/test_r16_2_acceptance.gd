@@ -83,12 +83,21 @@ func _run_route(label: String, preferred: Dictionary, exercise_wrong_u27: bool =
 	var preview_checked: bool = false
 	var u15_wrong_checked: bool = false
 	var u27_wrong_checked: bool = false
-	while guard < 180 and str(event.get("kind", "")) != "ending":
+	while guard < 2000 and str(event.get("kind", "")) != "ending":
 		guard += 1
 		var kind := str(event.get("kind", ""))
+		var text := str(event.get("summary", ""))
+		for marker: String in ["【若", " / ", "=>", "EXPOSED", "PROTECTED", "CORRECTION", "后台自动"]:
+			_expect(not text.contains(marker), "%s: %s leaked authoring text: %s" % [label, runtime.current_node_id, marker])
 		if kind == "error":
 			_expect(false, "%s: runtime error %s" % [label, str(event.get("error", ""))])
 			return
+		if runtime.pending_kind == "dialogue":
+			event = runtime.advance_dialogue()
+			continue
+		if runtime.pending_kind == "choice_feedback":
+			event = runtime.advance_choice_feedback()
+			continue
 		if runtime.pending_kind == "puzzle":
 			if runtime.pending_puzzle_id == "P_U15_CHAIN":
 				if not u15_wrong_checked:
@@ -125,7 +134,7 @@ func _run_route(label: String, preferred: Dictionary, exercise_wrong_u27: bool =
 			return
 		var choice_id := _preferred_choice(choices, preferred)
 		event = runtime.choose(choice_id)
-	_expect(guard < 180, "%s: route exceeded step guard" % label)
+	_expect(guard < 2000, "%s: route exceeded step guard" % label)
 	_expect(str(event.get("kind", "")) == "ending", "%s: route did not reach ending" % label)
 	var expected_ending: String = str({"A": "E01", "B": "E02", "C": "E03", "D": "E04"}.get(label, ""))
 	_expect(str(event.get("ending_id", "")) == expected_ending, "%s: expected %s, got %s" % [label, expected_ending, str(event.get("ending_id", ""))])
@@ -133,6 +142,7 @@ func _run_route(label: String, preferred: Dictionary, exercise_wrong_u27: bool =
 	_expect(runtime.state.get_value("typeset_confirmed", false) == true, "%s: typeset confirmation missing" % label)
 	_expect(runtime.state.get_value("actual_published", false) == true, "%s: publication flag missing" % label)
 	_expect(runtime.state.get_value("article_read_yutang", false) == true, "%s: read flag missing" % label)
+	_expect(runtime.state.mutation_errors.is_empty(), "%s: condition/mutation errors leaked: %s" % [label, str(runtime.state.mutation_errors)])
 
 
 func _preferred_choice(choices: Array[Dictionary], preferred: Dictionary) -> String:

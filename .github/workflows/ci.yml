@@ -49,6 +49,8 @@ jobs:
             "scripts/r16_2_runtime.gd"
             "tests/test_r16_2_runtime.gd"
             "tests/test_r16_2_acceptance.gd"
+            "tests/test_r16_2_dialogue.gd"
+            "tests/test_r16_2_boundaries.gd"
             ".agents/skills/mist-harbor-orchestrator/SKILL.md"
           )
           for f in "${files[@]}"; do
@@ -117,6 +119,12 @@ jobs:
 
       - name: 运行 R16.2 runtime headless 测试
         run: ./godot --headless --path . --script res://tests/test_r16_2_runtime.gd
+
+      - name: 运行 R16.2 逐句对白与条件过滤测试
+        run: ./godot --headless --path . --script res://tests/test_r16_2_dialogue.gd
+
+      - name: 运行 R16.2 知识与权限边界测试
+        run: ./godot --headless --path . --script res://tests/test_r16_2_boundaries.gd
 
       - name: 运行 R16.2 四路线验收 smoke
         run: ./godot --headless --path . --script res://tests/test_r16_2_acceptance.gd

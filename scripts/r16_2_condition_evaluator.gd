@@ -17,6 +17,11 @@ func evaluate(expression: String, values: Dictionary, extra_values: Dictionary =
 	var clean := expression.strip_edges()
 	if clean.is_empty() or clean == "ELSE":
 		return true
+	# The R16.2 DOCX uses Chinese conjunctions in conditional dialogue
+	# prefixes (for example "A=1 且 B=1"), while the workbook DSL documents
+	# their English equivalents. Normalize both authoring spellings before the
+	# recursive parser handles precedence.
+	clean = clean.replace("且", " AND ").replace("或", " OR ")
 	var context := values.duplicate(true)
 	for key: Variant in extra_values.keys():
 		context[key] = extra_values[key]
@@ -98,12 +103,21 @@ func _compare(actual: Variant, operator: String, expected_text: String) -> bool:
 			return contains if operator == "=" else not contains
 		return false
 	if actual is bool or expected is bool:
-		var left_bool := bool(actual)
-		var right_bool := bool(expected)
+		var left_bool := _as_bool(actual)
+		var right_bool := _as_bool(expected)
 		return _compare_order(left_bool, operator, right_bool)
 	if (actual is int or actual is float) and (expected is int or expected is float):
 		return _compare_order(float(actual), operator, float(expected))
 	return _compare_order(str(actual), operator, str(expected))
+
+
+func _as_bool(value: Variant) -> bool:
+	if value is bool:
+		return value
+	if value is int or value is float:
+		return value != 0
+	var clean := str(value).strip_edges().to_lower()
+	return clean in ["1", "true", "yes"]
 
 
 func _compare_order(actual: Variant, operator: String, expected: Variant) -> bool:

@@ -86,6 +86,29 @@ class R162CompilerTests(unittest.TestCase):
         self.assertGreaterEqual(len(self.data["newspaper_spec"]), 1)
         self.assertGreaterEqual(len(self.data["condition_dsl"]), 1)
 
+    def test_docx_performance_text_is_compiled_without_authoring_leaks(self) -> None:
+        beats = self.data["nodes"]["D02"]["dialogue_beats"]
+        self.assertGreater(len(beats), 3)
+        self.assertTrue(any("方仲山" in beat for beat in beats))
+        self.assertFalse(any(beat.startswith("第一章｜") for beat in beats))
+        self.assertFalse(any("玩家选择" in beat or "制作说明" in beat for beat in beats))
+        self.assertEqual([], self.data["nodes"]["D15-B"].get("dialogue_beats", []))
+        self.assertEqual([], self.data["nodes"]["D65-B"].get("dialogue_beats", []))
+
+    def test_docx_performance_text_removes_inline_production_artifacts(self) -> None:
+        beats = [
+            beat
+            for node in self.data["nodes"].values()
+            for beat in node.get("dialogue_beats", [])
+        ]
+        self.assertFalse(any("轻交互" in beat for beat in beats))
+        self.assertFalse(any("玩家选择" in beat or "制作说明" in beat for beat in beats))
+        self.assertFalse(any(beat.strip() in {"/", "\\", "’", "'", "”", '"'} for beat in beats))
+        self.assertFalse(any(beat.strip() == "旁白：D65。" for beat in beats))
+        self.assertFalse(any("。’" in beat for beat in beats))
+        self.assertTrue(any(beat == "旁白：玉棠把采访本推回给你：‘就到这儿。" for beat in beats))
+        self.assertTrue(any(beat == "旁白：阿成往账房方向看了一眼。" for beat in beats))
+
     def test_condition_and_mutation_dsl_reject_malformed_input(self) -> None:
         errors: list[str] = []
         compiler._validate_condition_expression("draft_main=FULL_NAMES AND", "TEST", self.data["states"], errors)
@@ -96,6 +119,15 @@ class R162CompilerTests(unittest.TestCase):
         errors.clear()
         compiler._validate_mutation_expression("apply UnknownRules", "TEST", self.data["states"], errors)
         self.assertTrue(any("unknown ruleset" in message for message in errors), errors)
+
+    def test_dialogue_condition_validation_accepts_chinese_operators(self) -> None:
+        errors: list[str] = []
+        compiler._validate_dialogue_conditions(
+            {"D_TEST": ["【若 article_final_full=1 且 missing_dialogue_state=1】旁白：测试"]},
+            self.data["states"],
+            errors,
+        )
+        self.assertTrue(any("unknown condition key missing_dialogue_state" in message for message in errors), errors)
 
     def test_main_route_shape_reaches_router(self) -> None:
         """Follow the canonical first-choice path without executing story text."""
