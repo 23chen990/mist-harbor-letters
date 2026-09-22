@@ -1,0 +1,40 @@
+{
+  "package": "雾港来信_R16.2_Agent开发交接包",
+  "generated_date": "2026-09-19",
+  "repo": "https://github.com/23chen990/mist-harbor-letters",
+  "baseline_tag": "baseline-20260919",
+  "baseline_commit": "a920ebffff051bc005080bda536ceeda9966fe92",
+  "main_equals_baseline": true,
+  "engine": "Godot 4.7 / GDScript / 2D Control",
+  "source_files": [
+    {
+      "path": "source/雾港来信_R16.2_核心玩法与选择兑现版_全篇互动剧本.docx",
+      "sha256": "d40060073d4e16d63e03c9757759a489c5fcf48d09bf06e6ff8ce73149100b86",
+      "size": 73790
+    },
+    {
+      "path": "source/雾港来信_R16.2_程序接入表.xlsx",
+      "sha256": "71e89e3109bf4d6da1cb268d5f4b751a6c204328806717e1cdd449eea05c20c3",
+      "size": 98725
+    },
+    {
+      "path": "source/雾港来信_R16.2_对白与体验验收清单.docx",
+      "sha256": "e508bb2c5ab55867c1e0455568d61a8658bb8b3968d6ce9ed733b1cb673c4bbb",
+      "size": 47277
+    },
+    {
+      "path": "source/雾港来信_R16.2_修改前后对照记录.docx",
+      "sha256": "26f99cd9a21b9c449d0b5618250a7e8e583211e0674fd9551a808c41b4ffdfea",
+      "size": 44095
+    }
+  ],
+  "docs": [
+    "00_AGENT_START_HERE.md",
+    "01_GITHUB_BASELINE_AUDIT.md",
+    "02_R16_2_CANON_OVERRIDE.md",
+    "03_ENGINE_MIGRATION_PLAN.md",
+    "04_REPO_FILE_CHANGE_MAP.md",
+    "05_ACCEPTANCE_TEST_PLAN.md",
+    "06_AGENT_EXECUTION_PROMPT.txt"
+  ]
+}

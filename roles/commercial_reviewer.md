@@ -1,5 +1,7 @@
 # Commercial Reviewer｜商业评审角色
 
+> R16.2 执行覆盖：本仓库当前开发口径以 `docs/CURRENT_TRUTH.md` 与 `docs/r16_2/source/` 为准；旧 v6 文件只作历史参考，研究建议不得升级为正式事实。
+
 ## 职责
 
 - 评估 Demo Hook、玩家继续玩的动力与核心体验是否能在试玩窗口内成立。
