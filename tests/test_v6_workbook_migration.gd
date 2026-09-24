@@ -15,7 +15,7 @@ func _init() -> void:
 	_expect(story.has_stage("第一章·报馆换人了"), "运行数据仍未进入 v6 C01『报馆换人了』")
 	_expect(_stage_contains(story, "第一章·报馆换人了", "NPC台词", "报馆换人了？"), "v6 C01 的入口对白没有同步")
 	_expect(_stage_contains(story, "第一章·方仲山", "NPC台词", "阿成，带沈记者去侧座"), "v6 C02 的方仲山派活没有同步")
-	_expect(_stage_contains(story, "第一章·阿成带路", "NPC台词", "爹，方先生让我先带报馆的过去"), "v6 C03 没有保留阿成与陈九生的父子关系")
+	_expect(_stage_prefix_contains(story, "第一章·阿成带路", "NPC台词", "爹，方先生让我先带报馆的过去"), "v6 C03 没有保留阿成与陈九生的父子关系")
 	_expect(_stage_contains(story, "第一章·纪念演出采访", "NPC台词", "二十年忌，为什么还是《夜渡》？"), "v6 C04 正常采访没有同步")
 	_expect(_has_player_line(story, "原件先不动，只记住要点"), "S02 已确认保留的第三个函件处理选项没有同步")
 	_expect(_stage_contains(story, "第一章·纪念演出采访·函件", "NPC台词", "原件在报馆"), "C04 第三分支没有说明原件仍在报馆")
@@ -48,6 +48,15 @@ func _init() -> void:
 
 func _stage_contains(story: RefCounted, stage: String, field: String, needle: String) -> bool:
 	for row: Dictionary in story.stage_rows(stage):
+		if needle in str(row.get(field, "")):
+			return true
+	return false
+
+
+func _stage_prefix_contains(story: RefCounted, stage_prefix: String, field: String, needle: String) -> bool:
+	for row: Dictionary in story.rows:
+		if not str(row.get("对话阶段", "")).begins_with(stage_prefix):
+			continue
 		if needle in str(row.get(field, "")):
 			return true
 	return false

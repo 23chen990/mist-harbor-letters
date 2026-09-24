@@ -1,8 +1,12 @@
 name: CI
 
-# 本工作流是《雾港来信》R16.2 工程基线的质量门禁：
+# 本工作流是《雾港来信》工程基线的质量门禁：
 # 任何 push / PR 到 main 都必须通过元数据、数据编译与 Godot headless 校验。
 # 规范依据：AGENTS.md 第 8 节（可复用文档/调度技能/元数据结构变更后须运行校验工具）。
+#
+# 正典口径（DEC-20260922-CANON-REVERT-V6）：当前正典是 v6。R16.2 已撤销，
+# 其数据、脚本与测试保留为归档实现，继续在 CI 中跑回归，但不代表剧情权威。
+# 失败时必须在任务报告中区分「v6 正典缺陷」与「R16.2 归档实现过期」。
 
 on:
   push:
@@ -39,6 +43,14 @@ jobs:
             ".gitignore"
             "docs/CURRENT_TRUTH.md"
             "docs/DECISIONS.md"
+            "docs/剧情修订稿_v6_人物与前史.md"
+            "docs/雾港来信_序章与第一章完整剧情信息树_v6.md"
+            "content/程序生成_请勿手改/剧情剧本.csv"
+            "scenes/main.tscn"
+            "scripts/main.gd"
+            "scripts/game_state.gd"
+            "scripts/story_repository.gd"
+            "docs/r16_2/README.md"
             "docs/r16_2/source/雾港来信_R16.2_核心玩法与选择兑现版_全篇互动剧本.docx"
             "docs/r16_2/source/雾港来信_R16.2_程序接入表.xlsx"
             "docs/r16_2/handoff/07_PACKAGE_MANIFEST.json"
@@ -61,6 +73,19 @@ jobs:
           done
           echo "必入关键文件检查通过（共 ${#files[@]} 项）"
 
+      - name: 正典入口一致性检查（DEC-20260922-CANON-REVERT-V6）
+        run: |
+          set -euo pipefail
+          if ! grep -q 'run/main_scene="res://scenes/main.tscn"' project.godot; then
+            echo "::error::project.godot 的 run/main_scene 必须指向 v6 入口 res://scenes/main.tscn"
+            exit 1
+          fi
+          if [ -d "docs/r16_2/legacy" ]; then
+            echo "::error::docs/r16_2/legacy/ 已废弃，v6 正本只保留 docs/ 根目录一份，避免正典漂移"
+            exit 1
+          fi
+          echo "正典入口检查通过"
+
       - name: 排除项未误入库检查
         run: |
           set -euo pipefail
@@ -72,8 +97,23 @@ jobs:
           done
           echo "排除项检查通过"
 
+  v6-data:
+    name: v6 正典 Python 校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: v6 序章修订单元测试
+        run: python3 tests/test_opening_revision.py
+
   r16-2-data:
-    name: R16.2 数据编译与静态校验
+    name: R16.2 归档数据编译与静态校验
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
@@ -94,8 +134,8 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_r16_2_*.py'
 
   # ---- Godot headless 测试 ----
-  # R16.2 运行时测试需要 Godot 4.7；旧 v6 内容测试不在本 job 中作为
-  # R16.2 事实验收。失败时必须在任务报告中区分过期测试与实现缺陷。
+  # v6 是当前正典，其测试是阻塞门禁。R16.2 测试作为归档实现回归保留，
+  # 失败时不得据此修改 v6 剧情事实。
   godot-tests:
     name: Godot 4.7 headless runtime
     runs-on: ubuntu-latest
@@ -117,14 +157,41 @@ jobs:
       - name: 导入项目并校验脚本
         run: ./godot --headless --path . --editor --quit
 
-      - name: 运行 R16.2 runtime headless 测试
-        run: ./godot --headless --path . --script res://tests/test_r16_2_runtime.gd
+      - name: 运行 v6 正典测试（阻塞门禁）
+        run: |
+          set -euo pipefail
+          for t in \
+            test_game_state \
+            test_story_content \
+            test_secret_release_content \
+            test_continuous_yutang_scene \
+            test_opening_demo_logic \
+            test_full_flow \
+            test_v343_story_content \
+            test_prelude_free_exploration \
+            test_choice_backtracking \
+            test_chapter_switching \
+            test_workbook_sync \
+            test_manual_line_advance \
+            test_player_response_ui \
+            test_interview_disclosure
+            test_rope_branch_prototype
+          do
+            echo "::group::$t"
+            ./godot --headless --path . --script "res://tests/$t.gd"
+            echo "::endgroup::"
+          done
 
-      - name: 运行 R16.2 逐句对白与条件过滤测试
-        run: ./godot --headless --path . --script res://tests/test_r16_2_dialogue.gd
-
-      - name: 运行 R16.2 知识与权限边界测试
-        run: ./godot --headless --path . --script res://tests/test_r16_2_boundaries.gd
-
-      - name: 运行 R16.2 四路线验收 smoke
-        run: ./godot --headless --path . --script res://tests/test_r16_2_acceptance.gd
+      - name: 运行 R16.2 归档实现回归
+        run: |
+          set -euo pipefail
+          for t in \
+            test_r16_2_runtime \
+            test_r16_2_dialogue \
+            test_r16_2_boundaries \
+            test_r16_2_acceptance
+          do
+            echo "::group::$t"
+            ./godot --headless --path . --script "res://tests/$t.gd"
+            echo "::endgroup::"
+          done

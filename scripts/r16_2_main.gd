@@ -194,8 +194,21 @@ func _clear_interaction() -> void:
 
 func _render_dialogue(event: Dictionary) -> void:
 	var payload: Dictionary = event.get("payload", {})
+	if bool(payload.get("is_player_response", false)):
+		# The protagonist never speaks automatically: expose the authored line
+		# as the button itself, including the single-response case.
+		speaker_label.text = "沈砚舟（你的回应）"
+		summary.text = ""
+		var response := Button.new()
+		response.text = str(payload.get("response_text", ""))
+		response.set_meta("player_response", true)
+		response.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		response.custom_minimum_size = Vector2(0, 58)
+		response.pressed.connect(_advance_dialogue)
+		interaction.add_child(response)
+		return
 	var next := Button.new()
-	next.text = "下一句" if bool(payload.get("has_more", false)) else "继续"
+	next.text = "继续"
 	next.custom_minimum_size = Vector2(0, 58)
 	next.pressed.connect(_advance_dialogue)
 	interaction.add_child(next)
@@ -223,11 +236,18 @@ func _speaker_name(text: String) -> String:
 
 
 func _speaker_body(text: String) -> String:
-	var clean := text.strip_edges()
-	var colon := clean.find("：")
-	if colon > 0 and colon < 14:
-		return clean.substr(colon + 1).strip_edges()
-	return clean
+	var lines := text.split("\n")
+	var result: Array[String] = []
+	for line: String in lines:
+		var clean := line.strip_edges()
+		if clean.is_empty():
+			continue
+		var colon := clean.find("：")
+		if colon > 0 and colon < 14:
+			result.append(clean.substr(colon + 1).strip_edges())
+		else:
+			result.append(clean)
+	return "\n".join(result)
 
 
 func _refresh_notebook() -> void:

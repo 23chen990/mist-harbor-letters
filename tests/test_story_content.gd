@@ -10,7 +10,7 @@ func _init() -> void:
 	var story = StoryRepositoryScript.new()
 	_expect(story.load_story("res://content/程序生成_请勿手改/剧情剧本.csv"), "v6 剧情 CSV 加载失败：%s" % "；".join(story.errors))
 	_expect(story.errors.is_empty(), "v6 剧情表校验失败：%s" % "；".join(story.errors))
-	_expect(story.row_count() == 107, "活动剧情应为序章 + C01—C22 共 107 行")
+	_expect(story.row_count() == 147, "活动剧情应为序章 + C01—C22 共 147 行")
 	for stage: String in [
 		"前序·自由探索", "前序·准备出发", "第一章·报馆换人了", "第一章·纪念演出采访",
 		"第一章·第一眼", "第一章·警方到场前", "第一章·沈砚舟的笔录", "第一章·现场收束",
@@ -34,6 +34,14 @@ func _check_ids_and_labels(story: RefCounted) -> void:
 		var player_line := str(row.get("玩家可选台词", ""))
 		for tag: String in ["[QUESTION]", "[ATTITUDE]", "[CONFRONT]", "[DIRECTION]"]:
 			_expect(not player_line.contains(tag), "正式选项泄露技术标签：%s" % player_line)
+		var kind := str(row.get("内容类型", ""))
+		var spoken := str(row.get("NPC台词", "")).strip_edges()
+		if kind == "NPC台词" and not spoken.is_empty():
+			for raw_line: String in spoken.replace("\\n", "\n").split("\n", false):
+				var line := raw_line.strip_edges()
+				if line.is_empty():
+					continue
+				_expect(line.contains("「") or line.contains("『"), "NPC台词混入非对白场面：%s / %s" % [row_id, line])
 
 
 func _check_three_letter_strategies(story: RefCounted) -> void:

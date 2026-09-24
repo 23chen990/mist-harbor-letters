@@ -41,14 +41,14 @@ func _run() -> void:
 	_expect(main.state.condition_met("evidence.letter_original.holder=newsroom"), "第三项路线错误移动了报馆原件")
 	_expect(main.state.condition_met("police_record.shen_completed=true"), "全流程绕过了 C14 两个真实观察回答")
 	for spoken: String in [
-		"他死前还在跑春和？", "材料给我看看。", "嗯。", "我接他的采访。",
-		"天桥？", "怕绳落下来？", "二十年忌，为什么还是《夜渡》？",
+		"他死前还在跑春和？", "材料给我看看。这趟跑完，明天还让我接着跑吗？", "嗯。", "我接他的采访。",
+		"左边怎么了？", "二十年忌，为什么还是《夜渡》？",
 		"二十年前的报道说，她也是唱完《夜渡》以后出的事。", "赵敬文死前，想再向您核实一处说法。",
 		"原件在报馆。正文我记得。", "没有。", "赵敬文留下的采访函。",
-		"我们只约了散场后见。他还没跟我谈。",
+		"我给他看的是二十年前的旧报。是他约我散场后再谈。",
 		"沈砚舟，《雾港日报》。受报馆委派，采访白素秋二十年忌演出。",
 		"原件在报馆。我今晚没有带纸面，只向林怀安口述了函件内容。",
-		"谢幕时，我看见他自己下台，脚步还稳。", "许先生的手指在他颈侧停了一瞬，随后拉回了护领。",
+		"谢幕时我看见他自己下台。", "许先生检查过他的脖子。",
 	]:
 		_expect(driver.clicked_lines.has(spoken), "全流程没有实际点击主控回答：%s" % spoken)
 	# v6 C10: 玉棠 turns toward the protagonist and warns him. The addressee is

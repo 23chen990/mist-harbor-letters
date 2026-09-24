@@ -20,6 +20,8 @@ class OpeningRevision(unittest.TestCase):
             self.assertIn(fact, opening)
         self.assertNotIn('半个钟头', opening)
         self.assertNotIn('留几栏', opening)
+        self.assertIn('材料给我看看。这趟跑完，明天还让我接着跑吗？', self.by_id['P0001B']['NPC台词'])
+        self.assertIn('十一点半截稿。明天的事，等稿子回来再说。', self.by_id['P0001C']['NPC台词'])
 
     def test_four_clues_go_straight_to_letter_preparation(self):
         self.assertEqual(self.by_id['P0013']['下一话题'], '前序·准备出发')
@@ -43,7 +45,8 @@ class OpeningRevision(unittest.TestCase):
         self.assertNotIn('您没有回', self.by_id['C04_010']['NPC台词'])
         self.assertIn('留底旁', self.by_id['C04_010']['NPC台词'])
         self.assertEqual(self.by_id['C04_030']['出现条件'], 'letter_preparation=left_home')
-        self.assertIn('没有拿出纸面', self.by_id['C04_030']['NPC台词'])
+        self.assertIn('原件在报馆。正文我记得。', self.by_id['C04_030']['NPC台词'])
+        self.assertIn('没有拿出纸面', self.by_id['C04_030']['画面表现'])
 
     def test_protagonist_dialogue_is_marked_as_spoken(self):
         for row in self.rows:

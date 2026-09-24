@@ -3,6 +3,8 @@ extends SceneTree
 const Driver = preload("res://tests/story_test_helpers.gd")
 const GameStateScript = preload("res://scripts/game_state.gd")
 const PUBLIC_DEATH_REPORT := "赵敬文死在春和后巷石埠附近，警方认定为失足落水身亡"
+const OPENING_MATERIALS_AND_SLOT_REPLY := "材料给我看看。这趟跑完，明天还让我接着跑吗？"
+const OPENING_EDITOR_DEADLINE := "在他桌上。十一点半截稿。明天的事，等稿子回来再说。"
 var failures := 0
 
 
@@ -28,9 +30,9 @@ func _run() -> void:
 		_expect(main.state.current_stage == "前序·春和旧线", "第一句回答没有进入春和旧线")
 		_expect(driver.labels().contains("跑了二十年。人也是在那儿没的。"), "玩家追问后没有得到死亡地点钩子")
 		_expect(not driver.labels().contains("他死前还在跑春和？"), "已点击的回答又占一个继续拍")
-		if await driver.press_response("材料给我看看。"):
+		if await driver.press_response(OPENING_MATERIALS_AND_SLOT_REPLY):
 			_expect(main.state.current_stage == "前序·领取材料", "第二句回答没有进入领取材料")
-			_expect(driver.labels().contains("在他桌上。十一点半截稿，稿子拿回来再看。"), "S00 没有保留材料去处与截稿时间")
+			_expect(driver.labels().contains(OPENING_EDITOR_DEADLINE), "S00 没有保留材料去处、截稿时间与未承诺下一篇稿位")
 			_expect(driver.response_buttons().is_empty(), "领取材料又强造无意义的主控回应")
 			await driver.press("继续")
 			_expect(main.state.current_stage == "前序·自由探索", "五句开场后没有进入工作桌")

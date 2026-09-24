@@ -8,7 +8,7 @@ var failures := 0
 func _init() -> void:
 	var story = StoryRepositoryScript.new()
 	_expect(story.load_story("res://content/程序生成_请勿手改/剧情剧本.csv"), "v6 活动剧情无法加载")
-	_expect(story.row_count() == 107, "v6 迁移后活动剧情行数不是 107")
+	_expect(story.row_count() == 147, "v6 迁移后活动剧情行数不是 147")
 	var folder := _row(story, "P0015")
 	_expect("冬月初七晚八时开锣" in str(folder.get("NPC台词", "")) and "林怀安领衔《夜渡》" in str(folder.get("NPC台词", "")), "春和工作夹没有保留已确认演出安排")
 	_expect(not "戏班换角" in str(folder) and not "教学" in str(folder), "工作夹恢复了已撤下教学页")

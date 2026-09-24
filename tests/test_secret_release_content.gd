@@ -8,9 +8,10 @@ var failures := 0
 func _init() -> void:
 	var story = StoryRepositoryScript.new()
 	_expect(story.load_story("res://content/程序生成_请勿手改/剧情剧本.csv"), "v6 剧情表无法加载")
-	_expect(story.row_count() == 107, "v6 活动剧情应为 107 行")
+	_expect(story.row_count() == 147, "v6 活动剧情应为 147 行")
 	_check_c04_release(story)
 	_check_c14_release(story)
+	_check_c18_editor_feedback(story)
 	_check_core_case_terms_are_not_leaked(story)
 	_finish()
 
@@ -31,6 +32,12 @@ func _check_c14_release(story: RefCounted) -> void:
 	_expect("只向林怀安口述了函件内容" in str(oral_record.get("NPC台词", "")), "C14 没有登记第三项路线的口述事实")
 	_expect("明天去报馆核验原件" in str(oral_record.get("NPC台词", "")), "C14 没有安排之后核验原件")
 	_expect("oral_pending_newsroom_check" in effects and "newsroom_check=planned" in effects, "C14 没有写入口述待核状态")
+
+
+func _check_c18_editor_feedback(story: RefCounted) -> void:
+	var feedback := _row(story, "C19_001")
+	_expect(str(feedback.get("出现条件", "")) == "report_focus=medicine", "药盒稿件没有绑定编辑即时反馈条件")
+	_expect("女儿抢药盒？那是花边" in str(feedback.get("NPC台词", "")), "药盒稿件没有显示编辑的花边判断")
 
 
 func _check_core_case_terms_are_not_leaked(story: RefCounted) -> void:

@@ -13,7 +13,7 @@ const CHAPTER_DESTINATIONS: Dictionary = {
 	"第一章": "前序·退稿与派活",
 }
 const CHAPTER_END_STAGES: Dictionary = {
-	"第一章·第一章结尾": "第一章结束",
+	"第一章·第一章结尾·收束": "第一章结束",
 }
 
 var state = GameStateScript.new()
@@ -225,7 +225,13 @@ func advance_story() -> void:
 func _render_stage(stage: String) -> void:
 	_clear(canvas)
 	_draw_backstage()
+	if stage == "第一章·是否写入赵敬文":
+		_draw_writing_copy_preview()
 	var presentations := _presentations_for_stage(stage)
+	if stage == "第一章·第一篇稿":
+		_draw_writing_panel(stage, _writing_choices_for_stage(stage))
+		_draw_test_controls(canvas)
+		return
 	if _presentations_use_interaction(presentations, "退稿稿件UI"):
 		_draw_rejected_manuscript_ui()
 	var choices := story.available_choices(stage, state)
@@ -309,6 +315,304 @@ func _render_stage(stage: String) -> void:
 	_draw_test_controls(canvas)
 
 
+func _draw_writing_panel(stage: String, choices: Array[Dictionary]) -> void:
+	# C18 是第一次把“我亲眼看到的东西”变成公共句子。把基础段、来源和可
+	# 支持的写法放在同一张稿纸上，玩家能看见每个判断来自哪条记录。
+	_rect(canvas, Rect2(30, 72, 1220, 535), Color(0.035, 0.052, 0.044, 0.98), PAPER_DARK, 2)
+	_label(canvas, "《雾港日报》·第一篇稿", Rect2(58, 88, 540, 38), 25, RED_LIGHT)
+	_label(canvas, "把现场写成明天会被读到的句子", Rect2(650, 94, 540, 28), 16, PAPER_DARK, HORIZONTAL_ALIGNMENT_RIGHT)
+
+	_label(canvas, "已经排好的基础段", Rect2(58, 136, 510, 28), 17, PAPER_DARK)
+	_rect(canvas, Rect2(56, 168, 520, 168), Color("d2c7a5"), Color("766a52"), 2)
+	var first := story.first_stage_row(stage)
+	var base_text := str(first.get("动作/表情备注", "")).strip_edges()
+	var closing_line := str(first.get("NPC台词", "")).strip_edges()
+	if not closing_line.is_empty():
+		if not base_text.is_empty():
+			base_text += "\n\n"
+		base_text += closing_line
+	var base_label := _label(canvas, base_text, Rect2(76, 185, 480, 137), 16, INK)
+	base_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+	_label(canvas, "现有材料（原件 / 现场速记）", Rect2(612, 136, 590, 28), 17, PAPER_DARK)
+	_rect(canvas, Rect2(610, 168, 590, 168), Color("111712"), Color("465248"), 1)
+	var source_lines := _writing_source_lines()
+	var source_scroll := ScrollContainer.new()
+	source_scroll.position = Vector2(626, 180)
+	source_scroll.size = Vector2(558, 144)
+	source_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	canvas.add_child(source_scroll)
+	var source_list := VBoxContainer.new()
+	source_list.custom_minimum_size = Vector2(530, 0)
+	source_list.add_theme_constant_override("separation", 6)
+	source_scroll.add_child(source_list)
+	for source_line: String in source_lines:
+		var source_label := _label(source_list, source_line, Rect2(0, 0, 530, 38), 14, PAPER)
+		source_label.custom_minimum_size = Vector2(530, 38)
+		source_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+	var selected_claim_id := str(state.technical_values.get("writing_claim_id", ""))
+	if selected_claim_id.is_empty():
+		_label(canvas, "下一步：选择一项能被记录支持的写法（一次只能提出一项待查疑点）", Rect2(58, 354, 1145, 30), 16, RED_LIGHT)
+		var first_button: Button
+		var columns := 2
+		var button_width := 555.0
+		var button_height := 58.0
+		var gap_x := 28.0
+		var gap_y := 10.0
+		for index in choices.size():
+			var choice: Dictionary = choices[index]
+			var column := index % columns
+			var row := index / columns
+			var button_rect := Rect2(58 + column * (button_width + gap_x), 398 + row * (button_height + gap_y), button_width, button_height)
+			var callback := _commit_confirmed_writing_claim.bind(choice) if str(choice.get("自动ID", "")) == "C18_010" else _select_writing_claim.bind(choice)
+			var choice_button := _button(canvas, str(choice.get("玩家可选台词", "")), button_rect, callback, index == 0)
+			choice_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			if first_button == null:
+				first_button = choice_button
+		if first_button != null:
+			first_button.grab_focus()
+	else:
+		var selected_choice := _writing_choice_by_id(choices, selected_claim_id)
+		var selected_label := str(selected_choice.get("玩家可选台词", ""))
+		_label(canvas, "已选择判断：%s" % selected_label, Rect2(58, 354, 1145, 30), 16, RED_LIGHT)
+		_label(canvas, "选择支持这句话的现场记录：", Rect2(58, 386, 1145, 28), 16, PAPER_DARK)
+		var support_sources := _writing_support_sources(selected_choice)
+		var first_source_button: Button
+		for index in support_sources.size():
+			var source: Dictionary = support_sources[index]
+			var source_button := _button(canvas, str(source.get("label", "")), Rect2(58, 422 + index * 58, 1140, 50), _commit_writing_claim.bind(selected_choice, str(source.get("id", ""))), index == 0)
+			source_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			if first_source_button == null:
+				first_source_button = source_button
+		if first_source_button != null:
+			first_source_button.grab_focus()
+		else:
+			_label(canvas, "现有记录不足以写成这句话。", Rect2(58, 430, 1140, 52), 18, RED_LIGHT)
+			var revise_button := _button(canvas, "换一项判断", Rect2(58, 500, 280, 50), _clear_writing_claim, true)
+			revise_button.grab_focus()
+
+
+func _draw_writing_copy_preview() -> void:
+	var copy_text := str(state.technical_values.get("writing_copy_text", "")).strip_edges()
+	if copy_text.is_empty():
+		return
+	var card := _rect(canvas, Rect2(650, 88, 560, 218), Color("d8ccb0"), Color("756d58"), 2)
+	_label(canvas, "稿面预览·第二段", Rect2(674, 104, 300, 30), 18, PAPER_DARK)
+	var copy_label := _label(canvas, copy_text, Rect2(674, 148, 512, 132), 17, INK)
+	copy_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+
+func _writing_choices_for_stage(stage: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for choice: Dictionary in story.stage_rows(stage):
+		if str(choice.get("玩家可选台词", "")).is_empty():
+			continue
+		var row_id := str(choice.get("自动ID", ""))
+		var available := state.condition_met(str(choice.get("出现条件", "始终")))
+		# C18 的两句位置写法在运行数据的历史补丁中曾把强弱条件写反。
+		# 这里按 v6 作者树的证据顺序收窄：亲眼看见台侧才可写强句；
+		# 只走来路时只能写场务说法。生成数据仍由工作簿负责维护。
+		if row_id == "C18_011":
+			# 台侧站位只是路线条件；还必须实际选择 C09 的倒地位置观察。
+			# 仅选择了“看林怀安”或“看周围的人”时，不足以写出位置矛盾。
+			available = state.condition_met("c07_position=side") and _has_writing_note("C09_position")
+		elif row_id == "C18_011B":
+			available = state.condition_met("c07_position!=side and pre_police_check=path") and _has_writing_note("C12_path") and state.condition_met("lin_missing_after_curtain=true")
+		elif row_id == "C18_014":
+			# 离岗判断必须落到一个具体的谢幕前后记录；C06 的中段记录
+			# 单独不足以写 v6 的谢幕时段句子。
+			available = available and (_has_writing_note("C07_front") or _has_writing_note("C07_orchestra"))
+		if available:
+			result.append(choice)
+	return result
+
+
+func _select_writing_claim(choice: Dictionary) -> void:
+	if state.current_stage != "第一章·第一篇稿":
+		return
+	_store_choice_checkpoint()
+	_clear_writing_copy()
+	state.apply_result("writing_claim_id=%s" % str(choice.get("自动ID", "")))
+	_render_stage(state.current_stage)
+
+
+func _clear_writing_claim() -> void:
+	state.technical_values.erase("writing_claim_id")
+	_clear_writing_copy()
+	_render_stage(state.current_stage)
+
+
+func _commit_confirmed_writing_claim(choice: Dictionary) -> void:
+	if state.current_stage != "第一章·第一篇稿":
+		return
+	_clear_writing_copy()
+	state.apply_result("writing_source_id=confirmed")
+	_write_copy_for_claim(choice, "confirmed")
+	choose_story_row(choice)
+
+
+func _commit_writing_claim(choice: Dictionary, source_id: String) -> void:
+	if state.current_stage != "第一章·第一篇稿":
+		return
+	if source_id.is_empty():
+		return
+	state.apply_result("writing_source_id=%s" % source_id)
+	_write_copy_for_claim(choice, source_id)
+	choose_story_row(choice)
+
+
+func _clear_writing_copy() -> void:
+	for key: String in ["writing_source_id", "writing_copy_variant", "writing_subject_id", "writing_copy_text"]:
+		state.technical_values.erase(key)
+
+
+func _write_copy_for_claim(choice: Dictionary, source_id: String) -> void:
+	var claim_id := str(choice.get("自动ID", ""))
+	var copy_text := ""
+	var variant := ""
+	var subject_id := ""
+	match claim_id:
+		"C18_010":
+			copy_text = "林怀安生前有心疾旧患。该旧患是否与其死亡有关，仍待检验结果确认。"
+			variant = "confirmed"
+		"C18_011":
+			if source_id == "C07_side+C09_position":
+				copy_text = "本报记者在场所见，林怀安最后的行走方向与其被发现的位置并不完全相合。该位置差异是否与死亡经过有关，仍待警方查明。"
+				variant = "location_strong"
+		"C18_011B":
+			if source_id == "C08_001+C12_path":
+				copy_text = "场务称林怀安从台侧下台，侧厅未见其人。两处是否相接，尚待查明。"
+				variant = "location_weak"
+		"C18_012":
+			if source_id == "C10_MEDICINE_BOX+C12_drug":
+				copy_text = "林怀安倒下后，其女林玉棠曾将死者随身药盒取出，并一度试图将其带离现场。该药盒目前已由警方封存。"
+				variant = "medicine_strong"
+			elif source_id == "C10_MEDICINE_BOX":
+				copy_text = "林玉棠曾从死者衣内取出随身药盒，并拒绝立即交给现场医师。"
+				variant = "medicine_narrow"
+		"C18_013":
+			if source_id == "C12_ROPE_ANOMALY":
+				copy_text = "本报记者在春和天桥看见，一根吊景绳的绳尾长度与相邻绳索不同，横杆处另有较新的麻毛。该变化形成于何时、是否与死者有关，目前尚无结论。"
+				variant = "rope"
+		"C18_014":
+			match source_id:
+				"C07_front":
+					copy_text = "演出后段至谢幕期间，负责前场事务的方仲山曾离开账桌；本报记者未见其去向。"
+					variant = "absence_fang"
+					subject_id = "fang"
+				"C07_orchestra":
+					copy_text = "谢幕前后，后台总管陈九生曾离开原本位置，稍后从侧台另一端返回。其间行踪尚待核对。"
+					variant = "absence_chen"
+					subject_id = "chen"
+	if copy_text.is_empty():
+		return
+	state.technical_values["writing_copy_variant"] = variant
+	state.technical_values["writing_subject_id"] = subject_id
+	state.technical_values["writing_copy_text"] = copy_text
+
+
+func _writing_choice_by_id(choices: Array[Dictionary], row_id: String) -> Dictionary:
+	for choice: Dictionary in choices:
+		if str(choice.get("自动ID", "")) == row_id:
+			return choice
+	return {}
+
+
+func _writing_support_sources(choice: Dictionary) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var row_id := str(choice.get("自动ID", ""))
+	match row_id:
+		"C18_011":
+			if _has_writing_note("C07_side") and _has_writing_note("C09_position"):
+				result.append({"id": "C07_side+C09_position", "label": "速记合并｜谢幕时沿侧台通道中央走向侧厅；发现时倒在岔口靠墙处。"})
+		"C18_011B":
+			if _has_writing_note("C12_path") and state.condition_met("lin_missing_after_curtain=true"):
+				var field_report := _writing_npc_line("C08_001")
+				var path_note := _writing_note_text("C12_path")
+				result.append({"id": "C08_001+C12_path", "label": "现场说法 + 来路速记｜%s；来路速记｜%s" % [field_report, path_note]})
+		"C18_012":
+			if _has_writing_note("C10_MEDICINE_BOX"):
+				result.append({"id": "C10_MEDICINE_BOX", "label": "速记（窄写法）｜" + _writing_note_text("C10_MEDICINE_BOX")})
+			if _has_writing_note("C10_MEDICINE_BOX") and _has_writing_note("C12_drug"):
+				result.append({"id": "C10_MEDICINE_BOX+C12_drug", "label": "速记合并｜药盒被取出后，玉棠又要求阿成把它交回。"})
+		"C18_013":
+			if _has_writing_note("C12_ROPE_ANOMALY"):
+				result.append({"id": "C12_ROPE_ANOMALY", "label": "速记｜" + _writing_note_text("C12_ROPE_ANOMALY")})
+		"C18_014":
+			for note_id: String in ["C07_front", "C07_orchestra"]:
+				if _has_writing_note(note_id):
+					var subject := "陈九生" if note_id == "C07_orchestra" else "方仲山"
+					result.append({"id": note_id, "label": "%s｜速记｜%s" % [subject, _writing_note_text(note_id)]})
+	return result
+
+
+func _has_writing_note(note_id: String) -> bool:
+	return Array(state.technical_collections.get("notes", [])).has(note_id)
+
+
+func _writing_source_lines() -> Array[String]:
+	var result: Array[String] = []
+	var records: Array = state.narrative_records.keys()
+	records.sort()
+	for record: Variant in records:
+		if not str(record).begins_with("已查看"):
+			continue
+		var record_text := _writing_record_text(str(record))
+		if not record_text.is_empty():
+			result.append("原件｜%s" % record_text)
+	var notes: Array = state.technical_collections.get("notes", [])
+	for note: Variant in notes:
+		var note_text := _writing_note_text(str(note))
+		if not note_text.is_empty():
+			result.append("速记｜%s" % note_text)
+	if result.is_empty():
+		result.append("还没有可用于提出疑点的现场速记。")
+	return result
+
+
+func _writing_record_text(record_name: String) -> String:
+	for row: Dictionary in story.rows:
+		var effects := str(row.get("选择结果", "")) + ";" + str(row.get("状态写入（不显示）", ""))
+		if ("记录“%s”" % record_name) not in effects:
+			continue
+		var knowledge := str(row.get("玩家因此知道什么", "")).strip_edges()
+		if not knowledge.is_empty():
+			return knowledge
+		var visual := str(row.get("画面表现", "")).strip_edges()
+		if not visual.is_empty():
+			return visual.split("\n", false)[0].strip_edges()
+	return record_name.trim_prefix("已查看")
+
+
+func _writing_note_text(note_id: String) -> String:
+	var expected := "notes += %s" % note_id
+	for row: Dictionary in story.rows:
+		var effects := str(row.get("选择结果", "")) + ";" + str(row.get("状态写入（不显示）", ""))
+		for raw_effect: String in effects.replace("；", ";").split(";", false):
+			if raw_effect.strip_edges() != expected:
+				continue
+			var knowledge := str(row.get("玩家因此知道什么", "")).strip_edges()
+			if not knowledge.is_empty():
+				return knowledge
+			var visual := str(row.get("画面表现", "")).strip_edges()
+			if not visual.is_empty():
+				return visual.split("\n", false)[0].strip_edges()
+	return ""
+
+
+func _writing_npc_line(row_id: String) -> String:
+	for row: Dictionary in story.rows:
+		if str(row.get("自动ID", "")) != row_id:
+			continue
+		var lines := str(row.get("NPC台词", "")).split("\n", false)
+		for index in range(lines.size() - 1, -1, -1):
+			var line := str(lines[index]).strip_edges()
+			if not line.is_empty():
+				return line
+	return ""
+
+
 func _inline_successor_choices(presentations: Array[Dictionary]) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	if not _presentations_use_interaction(presentations, "末句同屏后继选项"):
@@ -385,7 +689,10 @@ func _presentation_beats(presentations: Array[Dictionary]) -> Array[Dictionary]:
 		var content_type := str(row.get("内容类型", ""))
 		var interaction := str(row.get("演出/交互方式", ""))
 		var scene_only := content_type in ["纯画面", "演出", "结局", "写稿"] or ("场景动作背景UI" in interaction and not _contains_direct_quote(source))
-		if scene_only:
+		if content_type == "内心":
+			for part: String in _split_into_presentation_beats(source):
+				row_beats.append({"speaker": speaker, "text": part, "scene_actions": [], "dialogue_visible": true})
+		elif scene_only:
 			var actions := _scene_actions_for_row(row, true)
 			row_beats.append({"speaker": "", "text": "", "scene_actions": actions, "dialogue_visible": false})
 		elif _contains_direct_quote(source):
@@ -400,9 +707,9 @@ func _presentation_beats(presentations: Array[Dictionary]) -> Array[Dictionary]:
 				first_beat["scene_actions"] = existing_actions
 				row_beats[0] = first_beat
 		else:
-			var display_speaker := "场景" if speaker in ["", "旁白", "系统"] else speaker
-			for text: String in _split_into_presentation_beats(source):
-				row_beats.append({"speaker": display_speaker, "text": text})
+			# 无引号文本是画面指令，不进对白框。
+			var actions := _scene_actions_for_row(row, true)
+			row_beats.append({"speaker": "", "text": "", "scene_actions": actions, "dialogue_visible": false})
 		for index in row_beats.size():
 			var beat: Dictionary = row_beats[index]
 			var is_spoken := str(row.get("是否说出口", "")) != "否" and content_type == "NPC台词"
@@ -652,6 +959,9 @@ func _render_clue_inspection(stage: String) -> void:
 	var interaction := str(first.get("演出/交互方式", ""))
 	var is_reply_search_result := "回函搜寻结果" in interaction
 	_label(canvas, title, Rect2(200, 108, 880, 46), 28, RED_LIGHT, HORIZONTAL_ALIGNMENT_CENTER)
+	if stage == "前序·旧报发现":
+		# 只保留原件的开放状态，不替玩家总结调查方法或安排下一步。
+		_label(canvas, "状态：尚待核实", Rect2(460, 146, 360, 28), 14, PAPER_DARK, HORIZONTAL_ALIGNMENT_CENTER)
 	if is_reply_search_result:
 		_rect(canvas, Rect2(300, 190, 680, 240), Color("111712"), Color("465248"), 1)
 		_label(canvas, "\n\n".join(text_parts), Rect2(340, 265, 600, 90), 30, PAPER, HORIZONTAL_ALIGNMENT_CENTER)
@@ -1068,6 +1378,9 @@ func _mark_rejected_manuscript_node(node: Control) -> void:
 func _draw_scene_action_ui(actions: Array) -> void:
 	# 场景动作只驱动背景中的物件与运动提示；动作原文永不进入对话框。
 	var action_text := "\n".join(PackedStringArray(actions))
+	if _should_draw_publication_text_panel(action_text):
+		_draw_publication_text_panel(actions)
+		return
 	if "版样" in action_text and "抽走" not in action_text:
 		_draw_typeset_proof_action()
 	if ("稿" in action_text and "推" in action_text) or "往前" in action_text:
@@ -1075,6 +1388,82 @@ func _draw_scene_action_ui(actions: Array) -> void:
 	if "采访单" in action_text or "钥匙" in action_text:
 		_draw_assignment_materials_action()
 	_draw_generic_scene_action(actions)
+
+
+func _should_draw_publication_text_panel(action_text: String) -> bool:
+	if state.current_stage == "第一章·次日见报":
+		return true
+	if state.current_topic == "见报之后":
+		return true
+	return action_text.contains("这一篇见报之后")
+
+
+func _draw_publication_text_panel(actions: Array) -> void:
+	var publication_lines := _publication_copy_lines()
+	if publication_lines.is_empty():
+		return
+	var panel_title := "《雾港日报》·见报" if state.current_stage == "第一章·次日见报" else "见报之后"
+	var card := _rect(canvas, Rect2(250, 78, 780, 320), Color("d8ccb0"), Color("756d58"), 2)
+	_mark_scene_action_node(card, "publication_panel")
+	_label(canvas, panel_title, Rect2(278, 94, 260, 30), 18, PAPER_DARK)
+	var copy_scroll := ScrollContainer.new()
+	copy_scroll.position = Vector2(276, 134)
+	copy_scroll.size = Vector2(730, 246)
+	copy_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	canvas.add_child(copy_scroll)
+	var copy_list := VBoxContainer.new()
+	copy_list.custom_minimum_size = Vector2(700, 0)
+	copy_list.add_theme_constant_override("separation", 8)
+	copy_scroll.add_child(copy_list)
+	for clean: String in publication_lines:
+		var line_height := 112.0 if clean.begins_with("稿件正文｜") else 54.0
+		var label := _label(copy_list, clean, Rect2(0, 0, 700, line_height), 17, INK)
+		label.custom_minimum_size = Vector2(700, line_height)
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_mark_scene_action_node(label, "publication_panel")
+	var consequence_lines := _publication_consequence_lines()
+	if not consequence_lines.is_empty():
+		var consequence_card := _rect(canvas, Rect2(40, 430, 700, 145), Color(0.055, 0.075, 0.06, 0.96), Color("65705e"), 1)
+		_mark_scene_action_node(consequence_card, "publication_consequence")
+		_label(canvas, "见报后的即时反应", Rect2(62, 444, 300, 26), 16, PAPER_DARK)
+		var consequence_y := 478.0
+		for consequence: String in consequence_lines:
+			var consequence_label := _label(canvas, consequence, Rect2(62, consequence_y, 650, 46), 15, PAPER)
+			consequence_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			_mark_scene_action_node(consequence_label, "publication_consequence")
+			consequence_y += 48.0
+
+
+func _publication_copy_lines() -> Array[String]:
+	# C21/C22 的报纸卡只承载“画面表现”里的实际见报文字。
+	# 动作/表情备注仍由场景动作层使用，不能混进读者看到的版面。
+	var lines: Array[String] = []
+	for row: Dictionary in _presentations_for_stage(state.current_stage):
+		var copy := str(row.get("画面表现", "")).strip_edges()
+		if copy.is_empty():
+			continue
+		for raw_line: String in copy.split("\n", false):
+			var clean := raw_line.strip_edges()
+			if not clean.is_empty():
+				lines.append(clean)
+	if state.current_stage == "第一章·次日见报":
+		var written_copy := str(state.technical_values.get("writing_copy_text", "")).strip_edges()
+		if not written_copy.is_empty():
+			lines.append("稿件正文｜" + written_copy)
+	return lines
+
+
+func _publication_consequence_lines() -> Array[String]:
+	var lines: Array[String] = []
+	for row: Dictionary in _presentations_for_stage(state.current_stage):
+		var consequence := str(row.get("动作/表情备注", "")).strip_edges()
+		if consequence.is_empty():
+			continue
+		for raw_line: String in consequence.split("\n", false):
+			var clean := raw_line.strip_edges()
+			if not clean.is_empty() and not lines.has(clean):
+				lines.append(clean)
+	return lines
 
 
 func _draw_generic_scene_action(actions: Array) -> void:

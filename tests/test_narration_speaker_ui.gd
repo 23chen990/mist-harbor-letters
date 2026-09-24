@@ -55,14 +55,14 @@ func _run() -> void:
 	main._go_to_stage("第一章·沈砚舟的笔录")
 	await process_frame
 	var copied_beats: Array[Dictionary] = main._presentation_beats(main.story.available_presentations(main.state.current_stage, main.state))
-	var copied_action_found := false
+	var copied_spoken := ""
 	for beat: Dictionary in copied_beats:
-		if not bool(beat.get("dialogue_visible", true)) and not (beat.get("scene_actions", []) as Array).is_empty():
-			copied_action_found = true
-	_expect(copied_action_found, "C14 抄录登记的场景说明仍被当成沈砚舟对白")
-	_expect_authored_speaker(main, "C03_001", "前场催灯了，你还磨蹭。", "陈九生")
-	_expect_authored_speaker(main, "C03_001", "站线外。景片转过来不认人。", "陈九生")
-	_expect_authored_speaker(main, "C08_001", "爹！", "林玉棠")
+		if bool(beat.get("dialogue_visible", true)):
+			copied_spoken += str(beat.get("text", "")) + " "
+	_expect(not copied_spoken.contains("警员把正文"), "C14 抄录登记的场景说明仍被当成沈砚舟对白")
+	_expect_authored_speaker(main, "C03_070", "前场催灯了，你还磨蹭。", "陈九生")
+	_expect_authored_speaker(main, "C03_070", "站线外。", "陈九生")
+	_expect_authored_speaker(main, "C08_020", "爹！", "林玉棠")
 	_expect_authored_speaker(main, "C10_001", "先别动。", "许济川")
 	_expect_authored_speaker(main, "C10_001", "你也别过来。", "林玉棠")
 	_expect_authored_speaker(main, "C11_001", "听说又是旧疾。", "有人")

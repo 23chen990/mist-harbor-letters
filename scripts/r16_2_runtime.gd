@@ -14,7 +14,10 @@ var pending_headline_choice_id := ""
 var pending_choices: Array[Dictionary] = []
 var dialogue_beats: Array[Dictionary] = []
 var dialogue_index := -1
+var dialogue_groups: Array = []
+var dialogue_group_index := -1
 var dialogue_history: Array[String] = []
+var dialogue_spoken_groups: Dictionary = {}
 var current_text := ""
 var feedback_next_node := ""
 var feedback_choice_id := ""
@@ -44,7 +47,10 @@ func load_runtime(path: String = "res://content/程序生成_请勿手改/r16_2_
 	pending_choices.clear()
 	dialogue_beats.clear()
 	dialogue_index = -1
+	dialogue_groups.clear()
+	dialogue_group_index = -1
 	dialogue_history.clear()
+	dialogue_spoken_groups.clear()
 	current_text = ""
 	feedback_next_node = ""
 	feedback_choice_id = ""
@@ -94,6 +100,9 @@ func enter_node(node_id: String) -> Dictionary:
 	pending_choices.clear()
 	dialogue_beats.clear()
 	dialogue_index = -1
+	dialogue_groups.clear()
+	dialogue_group_index = -1
+	dialogue_spoken_groups.clear()
 	current_text = ""
 	feedback_next_node = ""
 	feedback_choice_id = ""
@@ -112,7 +121,8 @@ func enter_node(node_id: String) -> Dictionary:
 	if str(node.get("node_type", "scene")) in ["scene", "prologue"]:
 		dialogue_beats = _dialogue_beats_for_node(node)
 	if not dialogue_beats.is_empty():
-		dialogue_index = 0
+		_compute_dialogue_groups()
+		dialogue_group_index = 0
 		pending_kind = "dialogue"
 		last_event = _dialogue_event(node)
 		return last_event
@@ -123,11 +133,17 @@ func advance_dialogue() -> Dictionary:
 	if pending_kind != "dialogue":
 		return _fail("当前没有等待逐句对白")
 	var node := current_node()
-	if dialogue_index + 1 < dialogue_beats.size():
-		dialogue_index += 1
+	# A player-response beat is only spoken after the player presses its
+	# authored response button.  Commit it to history at that point, then
+	# advance to the next performance beat.
+	_commit_current_dialogue_group()
+	if dialogue_group_index + 1 < dialogue_groups.size():
+		dialogue_group_index += 1
 		last_event = _dialogue_event(node)
 		return last_event
 	dialogue_beats.clear()
+	dialogue_groups.clear()
+	dialogue_group_index = -1
 	dialogue_index = -1
 	pending_kind = ""
 	return _present_node_interaction(node)
@@ -234,10 +250,15 @@ func _dialogue_beats_for_node(node: Dictionary) -> Array[Dictionary]:
 
 
 func _dialogue_event(node: Dictionary) -> Dictionary:
-	var beat: Dictionary = dialogue_beats[dialogue_index]
-	current_text = str(beat.get("text", ""))
-	if dialogue_history.is_empty() or dialogue_history.back() != current_text:
-		dialogue_history.append(current_text)
+	var group: Array = dialogue_groups[dialogue_group_index]
+	var player_response := _dialogue_group_is_player(group)
+	var texts: Array[String] = []
+	for idx: int in group:
+		var beat_text := str(dialogue_beats[idx].get("text", ""))
+		texts.append(beat_text)
+		if not player_response and (dialogue_history.is_empty() or dialogue_history.back() != beat_text):
+			dialogue_history.append(beat_text)
+	current_text = "" if player_response else "\n".join(texts)
 	return {
 		"kind": "dialogue",
 		"node_id": str(node.get("node_id", "")),
@@ -247,12 +268,59 @@ func _dialogue_event(node: Dictionary) -> Dictionary:
 		"location": str(node.get("location", "")),
 		"summary": current_text,
 		"payload": {
-			"beat": beat,
-			"index": dialogue_index,
-			"total": dialogue_beats.size(),
-			"has_more": dialogue_index + 1 < dialogue_beats.size(),
+			"group": group,
+			"group_index": dialogue_group_index,
+			"total_groups": dialogue_groups.size(),
+			"has_more": dialogue_group_index + 1 < dialogue_groups.size(),
+			"is_player_response": player_response,
+			"response_text": "\n".join(texts) if player_response else "",
 		},
 	}
+
+
+func _dialogue_group_is_player(group: Array) -> bool:
+	if group.is_empty():
+		return false
+	return _beat_speaker(dialogue_beats[int(group[0])]) == "沈砚舟"
+
+
+func _commit_current_dialogue_group() -> void:
+	if dialogue_group_index < 0 or dialogue_group_index >= dialogue_groups.size():
+		return
+	if dialogue_spoken_groups.has(dialogue_group_index):
+		return
+	var group: Array = dialogue_groups[dialogue_group_index]
+	var committed_texts: Array[String] = []
+	for idx: int in group:
+		var beat_text := str(dialogue_beats[idx].get("text", ""))
+		committed_texts.append(beat_text)
+		if dialogue_history.is_empty() or dialogue_history.back() != beat_text:
+			dialogue_history.append(beat_text)
+	# Preserve the just-spoken response for the following node-level choice
+	# screen when this was the final beat in the scene.
+	if _dialogue_group_is_player(group):
+		current_text = "\n".join(committed_texts)
+	dialogue_spoken_groups[dialogue_group_index] = true
+
+
+func _beat_speaker(beat: Dictionary) -> String:
+	var text := str(beat.get("text", ""))
+	if text.begins_with("旁白："):
+		return "旁白"
+	var colon := text.find("：")
+	if colon > 0 and colon < 14:
+		return text.substr(0, colon)
+	return ""
+
+
+func _compute_dialogue_groups() -> void:
+	dialogue_groups.clear()
+	if dialogue_beats.is_empty():
+		return
+	# Keep authored beats atomic. NPC/旁白 lines advance through a single
+	# “继续” click; protagonist lines are exposed as one response button each.
+	for i in range(dialogue_beats.size()):
+		dialogue_groups.append([i])
 
 
 func choose(choice_id: String) -> Dictionary:
@@ -410,6 +478,9 @@ func rollback(snapshot_id: String) -> Dictionary:
 		# Preserve its final visible line without requiring the scene to be read again.
 		current_text = str(dialogue_beats.back().get("text", ""))
 		dialogue_beats.clear()
+		dialogue_groups.clear()
+		dialogue_group_index = -1
+		dialogue_spoken_groups.clear()
 		dialogue_index = -1
 		pending_kind = ""
 		return _present_node_interaction(current_node())

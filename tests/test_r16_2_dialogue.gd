@@ -22,15 +22,20 @@ func _run() -> void:
 	_expect(not str(event.get("summary", "")).contains("【若"), "玩家对白不应显示条件标记")
 	_expect(runtime.pending_kind == "dialogue", "逐句对白未结束前运行时应保持 dialogue 状态")
 	_expect(runtime.available_choices().is_empty(), "逐句对白未结束前不应暴露节点选择")
+	var saw_player_response := false
 
 	var dialogue_steps := 0
 	while runtime.pending_kind == "dialogue" and dialogue_steps < 64:
 		dialogue_steps += 1
+		if bool(event.get("payload", {}).get("is_player_response", false)):
+			saw_player_response = true
+			_expect(not str(event.get("payload", {}).get("response_text", "")).is_empty(), "主控回应必须携带实际台词")
 		event = runtime.advance_dialogue()
 	_expect(dialogue_steps > 3, "D02 应使用正文完整逐句对白，不能只剩接入表摘要（实际 %d 句）" % dialogue_steps)
 	_expect(dialogue_steps < 64, "D02 逐句对白没有正常结束")
 	_expect(str(event.get("kind", "")) == "choice", "D02 最后一句后才应显示选择")
 	_expect(runtime.available_choices().size() == 2, "D02 最后一句后应显示两项选择")
+	_expect(saw_player_response, "D02 应至少出现一个可点击的主控回应节拍")
 	_expect(not str(event.get("summary", "")).contains(" / "), "D02 选择阶段不能恢复整段摘要")
 	_expect(not str(event.get("summary", "")).is_empty(), "选择阶段应保留最后一句已读对白")
 	event = runtime.choose("C_U02_A")
@@ -55,7 +60,10 @@ func _run() -> void:
 		event = runtime.enter_node("D68")
 		_expect(event.get("kind") == "dialogue", "U31 必须显示对应的离别路线反馈")
 		_expect(runtime.dialogue_beats.size() > 1, "U31 应显示路线反馈及其后续完整对白")
-		_expect(not str(event.get("summary", "")).is_empty(), "U31 路线反馈应来自正文对白")
+		var route_text := str(event.get("summary", ""))
+		if bool(event.get("payload", {}).get("is_player_response", false)):
+			route_text = str(event.get("payload", {}).get("response_text", ""))
+		_expect(not route_text.is_empty(), "U31 路线反馈应来自正文对白或主控回应按钮")
 		_expect(runtime.state.evaluator.errors.is_empty(), "U31 条件别名不能造成 DSL 错误")
 
 	runtime.load_runtime()

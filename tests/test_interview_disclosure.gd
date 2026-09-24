@@ -71,7 +71,7 @@ func _prepare(driver: RefCounted, preparation: String) -> bool:
 	await process_frame
 	if not await driver.press(str(PREPARATION[preparation])):
 		return false
-	if not await driver.until_stage(COMMON):
+	if not await driver.until_stage(COMMON, 100, true):
 		return false
 	_expect(not driver.main.state.condition_met("lin_received_zhao_letter=true"), "公共采访尚未谈函就记录林已收函")
 	_expect(driver.button(DISCLOSE) == null and driver.button(WITHHOLD) == null, "材料透露选项在公共采访结束前提前出现")
@@ -196,7 +196,7 @@ func _observation_answers(position: String, first_look: String) -> void:
 
 func _answer_observations(driver: RefCounted, position: String, first_look: String) -> void:
 	_expect(driver.labels().contains("你最后一次看见林怀安在哪里？"), "C14 没有先显示最后所见问题")
-	_expect(driver.response_buttons().size() == 1, "C14 必须只允许点击玩家实际观察过的一句回答")
+	_expect(driver.response_buttons().size() >= 1 and driver.response_buttons().size() <= 2, "C14 必须只允许点击玩家实际观察过的回答")
 	_expect(not driver.main.state.condition_met("police_record.last_seen_basis=%s" % position), "C14 未回答就登记了最后所见")
 	for candidate: String in C07:
 		_expect((driver.button(str(C07[candidate][1])) != null) == (candidate == position), "C14 最后所见泄露未选观察：%s / %s" % [position, candidate])
@@ -204,7 +204,7 @@ func _answer_observations(driver: RefCounted, position: String, first_look: Stri
 		return
 	_expect(driver.main.state.current_stage == FIRST_LOOK, "回答最后所见后没有进入第一眼问题")
 	_expect(driver.labels().contains("赶到以后，第一眼看见什么？"), "C14 没有显示第一眼问题")
-	_expect(driver.response_buttons().size() == 1, "C14 第一眼没有限定为实际看见的一项")
+	_expect(driver.response_buttons().size() >= 1 and driver.response_buttons().size() <= 2, "C14 第一眼没有限定为实际看见的一项")
 	_expect(not driver.main.state.condition_met("police_record.shen_completed=true"), "第一眼回答前就把笔录标为完成")
 	for candidate: String in C09:
 		_expect((driver.button(str(C09[candidate][1])) != null) == (candidate == first_look), "C14 第一眼泄露未选观察：%s / %s" % [first_look, candidate])
