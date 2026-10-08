@@ -1,0 +1,7 @@
+interface:
+  display_name: "雾港来信可玩叙事工作流"
+  short_description: "审查 v6 剧情、选择与 Godot 信息流"
+  default_prompt: "使用 $mist-harbor-narrative-workflow 审查指定场次或信息流，输出证据、待确认项和验证命令。"
+
+policy:
+  allow_implicit_invocation: true

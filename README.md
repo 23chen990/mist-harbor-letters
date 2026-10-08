@@ -100,7 +100,7 @@ C04 携原件采访时，玩家选择透露旧报与草图，或先只谈采访�
 - tests/test_chapter_switching.gd：验证章节选择层、章节入口和切换后的进度隔离。
 - tests/test_investigation_prompt.gd：验证旧报查看页保留原件句与“尚待核实”开放状态，不替玩家总结调查方法或认证旧案真相。
 - tests/test_writing_panel.gd：验证写稿页显示来源记录，并只提供已有材料支持的报道选项。
-- tests/test_writing_evidence_conditions.gd：验证台侧亲见与来路记录分别只开放强、窄位置写法。
+- tests/test_writing_evidence_conditions.gd：验证位置强/窄写法、药盒与吊绳判断需要玩家实际取得的对应记录，路线状态不能替代亲见记录。
 - tests/test_writing_copy_variants.gd：验证来源选择会形成药盒强/窄句，并保留陈九生或方仲山的主体。
 - tests/test_publication_text_separation.gd：验证报纸正文不混入场景后果说明。
 - tests/test_c22_hook_reachability.gd：验证 C22 编辑裁决、站位名单和章末收束在 Demo 中可达。

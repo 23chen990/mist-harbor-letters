@@ -408,21 +408,7 @@ func _writing_choices_for_stage(stage: String) -> Array[Dictionary]:
 	for choice: Dictionary in story.stage_rows(stage):
 		if str(choice.get("玩家可选台词", "")).is_empty():
 			continue
-		var row_id := str(choice.get("自动ID", ""))
 		var available := state.condition_met(str(choice.get("出现条件", "始终")))
-		# C18 的两句位置写法在运行数据的历史补丁中曾把强弱条件写反。
-		# 这里按 v6 作者树的证据顺序收窄：亲眼看见台侧才可写强句；
-		# 只走来路时只能写场务说法。生成数据仍由工作簿负责维护。
-		if row_id == "C18_011":
-			# 台侧站位只是路线条件；还必须实际选择 C09 的倒地位置观察。
-			# 仅选择了“看林怀安”或“看周围的人”时，不足以写出位置矛盾。
-			available = state.condition_met("c07_position=side") and _has_writing_note("C09_position")
-		elif row_id == "C18_011B":
-			available = state.condition_met("c07_position!=side and pre_police_check=path") and _has_writing_note("C12_path") and state.condition_met("lin_missing_after_curtain=true")
-		elif row_id == "C18_014":
-			# 离岗判断必须落到一个具体的谢幕前后记录；C06 的中段记录
-			# 单独不足以写 v6 的谢幕时段句子。
-			available = available and (_has_writing_note("C07_front") or _has_writing_note("C07_orchestra"))
 		if available:
 			result.append(choice)
 	return result
